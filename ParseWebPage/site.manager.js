@@ -48,17 +48,16 @@ function parseTitleAndURL(queryFn, html) {
 
   if (alist == undefined) throw new Error('hot list is empty');
 
-  var hotList = {};
-  hotList.items = [];
+  var items = [];
   alist.each(function(i, elem) {
     var item = {};
     item.index = i + 1;
     item.title = $(this).text();
     item.url = $(this).attr('href');
-    hotList.items.push(item);
+    items.push(item);
   });
   return new Promise(function(resolve) {
-    resolve(hotList);
+    resolve(items);
   });
 }
 
