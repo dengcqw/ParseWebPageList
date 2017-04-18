@@ -1,0 +1,23 @@
+{
+  "name": "parse-web-page-list",
+  "version": "1.0.0",
+  "description": "simply save specific web page content to database and preview data from custom web page",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dengcqw/ParseWebPageList.git"
+  },
+  "author": "dengjinlong huangqingai",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dengcqw/ParseWebPageList/issues"
+  },
+  "homepage": "https://github.com/dengcqw/ParseWebPageList#readme",
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "phantom": "^4.0.2"
+  }
+}
