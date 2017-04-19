@@ -3,8 +3,15 @@ simply save specific web page content to database and preview data from custom w
 
 ## Open Source
 
-* SQLite3 (http://expressjs.com/en/guide/database-integration.html#sqlite)
 * Express (http://expressjs.com/)
+* antd - An enterprise-class UI design language and React-based implementation. (https://github.com/ant-design/ant-design)
+* SQLite3 (http://expressjs.com/en/guide/database-integration.html#sqlite)
+* cheerio   server-side jquery-like tool (https://github.com/cheeriojs/cheerio)
+* PhantomJS   a headless WebKit scriptable with a JavaScript API  (http://phantomjs.org/)
+
+## express server
+
+quickly set up express server according to the demo(https://github.com/kenanpengyou/express-webpack-full-live-reload-example)
 
 ## requirements
 

@@ -1,6 +1,7 @@
 
 var _ = require('lodash');
 var fs = require('fs');
+var cheerio = require('cheerio');
 
 var urlConfig = require('./urlConfig-test.json');
 var siteMgr = require('./site.manager.js');
@@ -16,15 +17,16 @@ function wrapCategory(urls, queryFn) {
     console.log("fetching: " + categoryID +' url: ' + url);
 
     return loadWebPage(url)
-      .then(html=>siteMgr.parseTitleAndURL(queryFn, html))
+      .then(html=>queryFn(cheerio.load(html)))
       .then(hotItems=>{
 
         console.log('fetched: '+url+ ' length: ' + hotItems.length);
 
         var elapsedTime = Date.now() - startTime;
 
-        return {categoryID, hotItems, elapsedTime}; // <-- category data object
-      });
+        return {[categoryID]: {hotItems, elapsedTime}}; // <-- category data object
+      })
+      .catch((err)=>console.log(err));
   });
 
   return Promise.all(categoryWrappers);
@@ -42,7 +44,13 @@ function start() {
 
     return wrapCategory(urls, queryFn).then(results=>{
       console.log('fetch success for : ' + siteID);
-      return {results, siteID};  // <-- site data object
+      if (this.outputPath) {
+        fs.writeFile(this.latestPath+'/'+siteID+'.json', JSON.stringify(results), (err)=> {
+          if (err) throw err;
+          console.log(`fetch ${siteID} data save to ${this.latestPath}`);
+        });
+      }
+      return {[siteID]: results};  // <-- site data object
     });
   });
 
@@ -62,6 +70,13 @@ function start() {
 
 function ParseWebPageList(outputPath) {
   this.outputPath = outputPath;
+  this.latestPath = outputPath + '/latest';
+  if ( ! fs.existsSync(this.outputPath)) {
+    fs.mkdirSync(this.outputPath);
+  }
+  if ( ! fs.existsSync(this.latestPath)) {
+    fs.mkdirSync(this.latestPath);
+  }
 }
 
 ParseWebPageList.prototype.start = start;

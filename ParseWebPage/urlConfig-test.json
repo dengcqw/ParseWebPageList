@@ -1,7 +1,7 @@
 {
-  "qq": {
-    "dianshiju": "http://v.qq.com/x/list/tv",
-    "zongyi":    "http://v.qq.com/x/list/variety",
-    "dongman":   "http://v.qq.com/x/list/cartoon"
+  "letv": {
+    "dianshiju": "http://top.le.com/tvhp.html",
+    "zongyi":    "http://top.le.com/varhp.html",
+    "dongman":   "http://top.le.com/comichp.html"
   }
 }

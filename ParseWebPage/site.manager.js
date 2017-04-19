@@ -1,50 +1,64 @@
 
 var siteIds = require('./site.id.js').siteIds;
-const cheerio = require('cheerio');
 
 var queryMap = (function () {
   var queryMap = {};
   queryMap[siteIds.iqiyi] =    function($) {
-    return $('.topDetails-list>li').find('h2>a[title]');
+    var alist = $('.topDetails-list>li').find('h2>a[title]');
+    return parseTitleAndURL(alist, $);
   };
   queryMap[siteIds.acfun] =    function($) {
-    return $('.title');
+    var alist = $('.title');
+    return parseTitleAndURL(alist, $);
   };
   queryMap[siteIds.bilibili] = function($) {
-    return $('.title').parent();
+    var alist = $('.title').parent();
+    return parseTitleAndURL(alist, $);
   };
   queryMap[siteIds.mgtv] =     function($) {
-    return $('.m-list-item');
+    var alist = $('.m-list-item>.info-1').find('span.title'); // title element, parent is a element
+
+    var items = [];
+    alist.each(function(i, elem) {
+      var item = {};
+      item.index = i + 1;
+      item.title = $(this).text();
+      item.url = $(this).parent().attr('href');
+      items.push(item);
+    });
+
+    return new Promise(function(resolve) {
+      resolve(items);
+    });
   };
   queryMap[siteIds.sohu] =     function($) {
-    return $('.rList_subCon').eq(0).find('.rList>li div.vName a.at');
+    var alist = $('.rList_subCon').eq(0).find('.rList>li div.vName a.at');
+    return parseTitleAndURL(alist, $);
   };
   queryMap[siteIds.letv] =     function($) {
-    var alist = [];
-    $('ol.chart-list').eq(0).children().each(function() {
-      var subA = $(this).find('a');
-      if (subA.length > 1) {
-        alist.push(subA[1]);
-      }
-    })
-    return alist;
+    var alist = $('ol.chart-list.selected').children().find('span').filter(function(index, element) {
+      return $(this).parent().children().get(1) == element }
+    ).find('a');
+    return parseTitleAndURL(alist, $);
   };
   queryMap[siteIds.qq] =       function($) {
-    return $('.figures_list').find('.figure_title>a[title]');
+    var alist = $('.figures_list').find('.figure_title>a[title]');
+    return parseTitleAndURL(alist, $);
   };
   queryMap[siteIds.pptv] =     function($) {
-    return $('.main').eq(1).find('.plist1>ul.cf>li>div.tit>a');
+    var alist = $('.main').eq(1).find('.plist1>ul.cf>li>div.tit>a');
+    return parseTitleAndURL(alist, $);
   };
   queryMap[siteIds.youku] =    function($) {
-    return $('#expRank').find('a.name');
+    var alist = $('#expRank').find('a.name');
+    return parseTitleAndURL(alist, $);
   };
 
   return queryMap;
 })();
 
-function parseTitleAndURL(queryFn, html) {
-  var $ = cheerio.load(html);
-  var alist = queryFn($);
+function parseTitleAndURL(queryResult, $) {
+  var alist = queryResult; // jquery object
 
   if (alist == undefined) throw new Error('hot list is empty');
 
@@ -63,6 +77,5 @@ function parseTitleAndURL(queryFn, html) {
 
 module.exports = {
   siteIds,
-  queryMap, // title and url only
-  parseTitleAndURL,
+  queryMap // title and url only
 }
