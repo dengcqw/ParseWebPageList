@@ -3,7 +3,7 @@ var _ = require('lodash');
 var fs = require('fs');
 var cheerio = require('cheerio');
 
-var urlConfig = require('./urlConfig-test.json');
+var urlConfig = require('./urlConfig.json');
 var siteMgr = require('./site.manager.js');
 var loadWebPage = require('./loadWebPage.js'); // Promise
 
