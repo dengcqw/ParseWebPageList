@@ -1,6 +1,4 @@
 
-require('../common/reset.css');
-require('antd/dist/antd.css');
 import ReactDOM from 'react-dom'
 import React from 'react'
 
@@ -9,13 +7,13 @@ import { DatePicker } from 'antd';
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
-export default class App extends React.Component {
+class App extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      result: "test"
+      result: "login"
     }
-    this._privateFunction.bind(this)();
+    //this._privateFunction.bind(this)();
     this.handleClick = this.handleClick.bind(this);
   }
 
@@ -42,9 +40,10 @@ export default class App extends React.Component {
       <div style={{flex:1, width:"500px"}}>
         <DatePicker/>
         <div style={{color:"red"}} ref='fetch'></div>
-        <div style={{height: "20px"}}/>
-        <div>
-          {this.state.result}
+        <div style={{height: "20px"}}>
+          <a href='/login'>
+            {this.state.result}
+          </a>
         </div>
         <input type="button" value="Focus the text input" onClick={this.handleClick} />
       </div>

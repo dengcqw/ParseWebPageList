@@ -3,14 +3,15 @@ var path = require('path');
 
 var publicPath = 'http://localhost:3000/';
 var hotMiddlewareScript = 'webpack-hot-middleware/client?reload=true';
+var CopyWebpackPlugin = require("copy-webpack-plugin");
 
 var devConfig = {
   entry: {
-    frontpage: ['./client/frontpage', hotMiddlewareScript],
-    login: ['./client/login', hotMiddlewareScript]
+    "frontpage.js": ['./client/frontpage', hotMiddlewareScript],
+    "login.js": ['./client/login', hotMiddlewareScript]
   },
   output: {
-    filename: './[name]/bundle.js',
+    filename: './[name]',
     path: path.resolve(__dirname, './public'),
     publicPath: publicPath
   },
@@ -23,7 +24,7 @@ var devConfig = {
       test: /\.css$/,
       use: [
         'style-loader',
-        'css-loader?sourceMap'
+        'css-loader'
       ]
     }, {
       test: /\.(js|jsx)$/,
@@ -46,8 +47,24 @@ var devConfig = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
-  ]
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: false
+    }),
+    new CopyWebpackPlugin([
+      { from: './node_modules/react/dist/react.min.js'},
+      { from: './node_modules/react-dom/dist/react-dom.min.js'},
+      { from: './node_modules/antd/dist/antd.min.js'},
+      { from: './node_modules/antd/dist/antd.min.css'},
+      { from: './client/common/reset.css'}
+    ], {copyUnmodified: true})
+  ],
+  externals: {
+    "react": "React",
+    "react-dom": "ReactDOM",
+    "antd": "andtd",
+    "antd.css": "antd.css"
+  },
 };
 
 module.exports = devConfig;
