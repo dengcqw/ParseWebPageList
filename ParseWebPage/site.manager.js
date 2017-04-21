@@ -1,6 +1,8 @@
 
 var siteIds = require('./site.id.js').siteIds;
 
+const maxQueryCount = 10;
+
 var queryMap = (function () {
   var queryMap = {};
   queryMap[siteIds.iqiyi] =    function($) {
@@ -69,6 +71,7 @@ function parseTitleAndURL(queryResult, $) {
     item.title = $(this).text();
     item.url = $(this).attr('href');
     items.push(item);
+    if (i+1>=maxQueryCount) return false;
   });
   return new Promise(function(resolve) {
     resolve(items);

@@ -2,6 +2,7 @@
 var _ = require('lodash');
 var fs = require('fs');
 var cheerio = require('cheerio');
+const md5Hex = require('md5-hex');
 
 var urlConfig = require('./urlConfig.json');
 var siteMgr = require('./site.manager.js');
@@ -9,8 +10,26 @@ var loadWebPage = require('./loadWebPage.js'); // Promise
 
 var startTime;
 
+function urlToDocID(url, partStrs/* strs to delete */) {
+  function deleteStr(origStr, partStr) {
+    if (typeof origStr == 'string' && typeof partStr == 'string') {
+      if (origStr.indexOf(partStr) != -1) {
+        return origStr.slice(0, origStr.indexOf(partStr));
+      } else {
+        return origStr;
+      }
+    }
+  }
+
+  partStrs = partStrs || ['?', '#'];
+  console.log("----> "+url);
+  url = partStrs.reduce(deleteStr, url);
+  console.log("----> "+url);
+  return md5Hex(url);
+}
+
 // wrap url-fetch and html-parse for Promise.all
-function wrapCategory(urls, queryFn) {
+function wrapCategory(urls, queryFn, siteID) {
 
   var categoryWrappers = _.map(urls, (url, categoryID)=>{
 
@@ -22,8 +41,13 @@ function wrapCategory(urls, queryFn) {
 
         console.log('fetched: '+url+ ' length: ' + hotItems.length);
 
-        var elapsedTime = Date.now() - startTime;
+        // 如果是bilibili不删除警号后的数据
+        let partStrs = (siteID == 'bilibili')?['?']:['?','#'];
+        hotItems = hotItems.map(function(item) {
+          return Object.assign({}, item, {docID: urlToDocID(item.url, partStrs)});
+        });
 
+        var elapsedTime = Date.now() - startTime;
         return {[categoryID]: {hotItems, elapsedTime}}; // <-- category data object
       })
       .catch((err)=>console.log(err));
@@ -42,7 +66,7 @@ function start() {
       throw new Error('fetch error: ' + siteID + ' ' + JSON.stringify(urls));
     }
 
-    return wrapCategory(urls, queryFn).then(results=>{
+    return wrapCategory(urls, queryFn, siteID).then(results=>{
       console.log('fetch success for : ' + siteID);
       if (this.outputPath) {
         fs.writeFile(this.latestPath+'/'+siteID+'.json', JSON.stringify(results), (err)=> {
@@ -79,6 +103,37 @@ function ParseWebPageList(outputPath) {
   }
 }
 
+function getFileNames(callback) {
+  let path = this.outputPath;
+  let jsonFiles = [];
+  console.log("----> output path:"+path);
+  fs.readdir(path, (err, files)=> {
+    files.forEach((file)=>{
+      if (file.startsWith('.')) return;
+      var subpath = path + '/' + file;
+      if(fs.lstatSync(subpath).isDirectory()){
+        return;
+      } else {
+        jsonFiles.push(file);
+      }
+    });
+    callback && callback(jsonFiles.sort().reverse());
+  });
+}
+
+function getContent(fileName, callback) {
+  let path = this.outputPath + '/' + fileName;
+  fs.readFile(path, (err, data) => {
+    if (err) throw err;
+    callback(data);
+  });
+}
+
 ParseWebPageList.prototype.start = start;
+ParseWebPageList.prototype.getFileNames = getFileNames;
+ParseWebPageList.prototype.getContent = getContent;
 
 module.exports = ParseWebPageList;
+
+//var docid = urlToDocID("http://tv.sohu.com/20170228/n481998621.shtml?fid=678&pvid=4d4db6d26aa0a4ec#homt");
+//console.log("----> "+docid);
