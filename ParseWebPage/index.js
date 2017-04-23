@@ -48,7 +48,7 @@ function wrapCategory(urls, queryFn, siteID) {
         });
 
         var elapsedTime = Date.now() - startTime;
-        return {[categoryID]: {hotItems, elapsedTime}}; // <-- category data object
+        return {categoryID, result: {hotItems, elapsedTime}}; // <-- category data object
       })
       .catch((err)=>console.log(err));
   });
@@ -74,8 +74,14 @@ function start() {
           console.log(`fetch ${siteID} data save to ${this.latestPath}`);
         });
       }
-      return {[siteID]: results};  // <-- site data object
-    });
+      let reducedValue = results.reduce(function(reducedValue, elt) {
+        reducedValue[elt.categoryID] = elt.result;
+        return reducedValue;
+      }, {});
+      reducedValue.siteID = siteID;
+
+      return reducedValue;  // <-- site data object
+    }).catch((err)=>console.log(err));
   });
 
   return Promise.all(siteWrappers).then(results=>{

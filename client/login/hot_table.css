@@ -1,0 +1,22 @@
+
+
+.site-name {
+  font-size: 30px;
+  color: black;
+  background-color: #EEE;
+}
+
+.category-name {
+  font-size: 20px;
+  color: black;
+  width: 80px;
+  text-align: center;
+}
+
+.category-tb {
+}
+
+.clear {
+  clear: both;
+  height:0;
+}
