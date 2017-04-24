@@ -6,6 +6,7 @@ import { Table, Icon, Modal, Button, Tabs } from 'antd';
 const { Column } = Table;
 
 require('./hot_table.css');
+const { siteIds, siteNames } =  require('../../ParseWebPage/site.id.js')
 
 /*
  * hot table list fo all site
@@ -18,7 +19,7 @@ export class HotListTables extends React.Component {
   }
 
   static defaultProps = {
-    content: [], // json file content
+    content: {}, // json file content
   };
 
   privateFunction () {
@@ -28,8 +29,9 @@ export class HotListTables extends React.Component {
     return (
       <div>
       {
-        this.props.content.map(function(siteContent, i) {
-          return <SiteTable siteContent={siteContent}/>
+        Object.values(siteIds).map((siteID, i) => {
+          let siteContent = this.props.content[siteID];
+          return <SiteTable siteContent={siteContent} siteID={siteID}/>
         })
       }
       </div>
@@ -48,24 +50,25 @@ export class HotListTabs extends React.Component {
   }
 
   static defaultProps = {
-    content: [], // json file content
+    content: {}, // json file content
   };
 
   privateFunction () {
   }
 
   callback = (key) => {
-    console.log(key);
+    console.log("----> click: "+key)
   }
 
   render () {
     return (
-      <Tabs onChange={this.callback} type="card" animated={false}>
+      <Tabs onChange={this.callback} type="card" animated={false} defaultActiveKey="tabkey_0">
       {
-        this.props.content.map(function(siteContent, i) {
+        Object.values(siteIds).map((siteID, i) => {
+          let siteContent = this.props.content[siteID];
           return (
-            <Tabs.TabPane tab={siteContent.siteID} key={"tabkey_"+i}>
-              <SiteTable siteContent={siteContent} showTitle={false}/>
+            <Tabs.TabPane tab={siteNames[siteID]} key={"tabkey_"+i}>
+              <SiteTable siteContent={siteContent} showTitle={false} siteID={siteID}/>
             </Tabs.TabPane>
           )
         })
@@ -75,7 +78,7 @@ export class HotListTabs extends React.Component {
   }
 }
 
-var categoryName = {
+const categoryName = {
 "dianshiju":"电视剧",
 "zongyi":"综艺",
 "dongman":"动漫"
@@ -93,33 +96,42 @@ class SiteTable extends React.Component {
   static defaultProps = {
     siteContent: {},
     showTitle:true,
+    siteID:"",  /* isRequired prop */
   };
 
   privateFunction () {
   }
 
   render () {
-    const {siteContent, showTitle} = this.props;
+    const {siteContent, showTitle, siteID} = this.props;
     return (
       <div>
       {
         showTitle
-        ? <div height="30px" className='site-name'>{siteContent.siteID}</div>
+        ? <div height="30px" className='site-name'>{siteNames[siteID]}</div>
         : null
       }
       {
-        ["dianshiju", "zongyi", "dongman"].map(function(categoryID) {
+        (siteContent && siteContent.siteID/* valid content should has its siteID */)
+        ? (["dianshiju", "zongyi", "dongman"].map(function(categoryID) {
           if (!siteContent[categoryID]) {
             return null;
           }
           let hotItems = siteContent[categoryID].hotItems;
-           return (
-             <div style={{float:"left", marginRight:'40px'}}>
-               <span className='category-name' width='50px'>{categoryName[categoryID]}</span>
-               <CategoryTable className='category-tb' hotItems={hotItems}/>
-             </div>
-           )
-        })
+          let categoryURL = siteContent[categoryID].url;
+          let contentSiteID = siteContent.siteID;
+          return (
+            <div style={{float:"left", marginRight:'40px'}}>
+              <span className='category-name' width='50px'>{categoryName[categoryID]}<a href={categoryURL} target='_blank'><Icon type="link" /></a></span>
+              <CategoryTable
+                className='category-tb'
+                hotItems={hotItems}
+                categoryID={categoryID}
+                siteID={contentSiteID} />
+            </div>
+          )
+        }))
+        : <p style={{color:'red'}}>{siteNames[siteID]}数据为空</p>
       }
         <div className='clear'></div>
       </div>
@@ -137,17 +149,15 @@ class SiteTable extends React.Component {
 
 */
 class CategoryTable extends React.Component {
-  state = { visible: false }
-
-  showModal = () => {
-    this.setState({
-      visible: true,
-      detailItem: undefined
-    });
+  state = {
+    visible: false,
+    titleFromDetail: ''
   }
 
   static defaultProps = {
     hotItems: [],
+    categoryID: '',
+    siteID:'',
   };
 
   showDetail = function(item) {
@@ -157,7 +167,28 @@ class CategoryTable extends React.Component {
       width: "500px",
       maskClosable: true,
       content: (
-        <ItemDetailModal item={item}/>
+        <ItemDetailModal
+          item={item}
+          onRequsetDetail={
+            ()=>fetch(`/api/itemDetail?title=${item.title}&category=${this.props.categoryID}&site=${this.props.siteID}`)
+              .then(function(response) {
+                if (response.status >= 400) {
+                  throw new Error("Bad response from server");
+                }
+                return response.json();
+              })
+              .then((detail)=>{
+                //debugger;
+                if (detail && detail.albumDocInfo && detail.albumDocInfo.albumTitle) {
+                  console.log('item title[', item.title, '] get albumTitle:', detail.albumDocInfo.albumTitle);
+                  this.setState({titleFromDetail: detail.albumDocInfo.albumTitle});
+                } else {
+                  console.log('item title[', item.title, '] 获取失败');
+                  this.setState({titleFromDetail: "获取失败"});
+                }
+              })
+          }
+          statusText={this.state.titleFromDetail} />
       ),
       onOk() {},
     });
@@ -203,6 +234,8 @@ class CategoryTable extends React.Component {
 export class ItemDetailModal extends React.Component {
   static defaultProps = {
     item: {},
+    onRequsetDetail: function(){},
+    statusText: ''
   };
 
   copyToClipboard = function(text) {
@@ -227,12 +260,15 @@ export class ItemDetailModal extends React.Component {
     }
   }
 
-  button = (text)=> {
+  copyButton = (text)=> {
     return <Button size='small' style={{marginLeft:'20px'}} onClick={()=>this.copyToClipboard(text)}>copy</Button>;
+  }
+  requsetButton = ()=> {
+    return <Button size='small' style={{marginLeft:'20px'}} onClick={this.props.onRequsetDetail}>requset</Button>;
   }
 
   render() {
-    const {item} = this.props;
+    const {item, statusText} = this.props;
     if (item == undefined) {
       return null;
     }
@@ -241,12 +277,13 @@ export class ItemDetailModal extends React.Component {
         <p style={{lineHeight: '20px'}}>视频名：{item.title}</p>
         <p style={{lineHeight: '20px'}}>网页链接：
           <a ref='pagelink' href={item.url} target="_blank">{item.url}</a>
-          {this.button(item.url)}
+          {this.copyButton(item.url)}
         </p>
         <p style={{lineHeight: '20px'}}>docID：{item.docID}
-          {this.button(item.docID)}
+          {this.copyButton(item.docID)}
         </p>
-        <p style={{lineHeight: '20px'}}>状态：TODO</p>
+        <p style={{lineHeight: '20px'}}>状态：{statusText}
+          {this.requsetButton()}</p>
       </div>
     );
   }

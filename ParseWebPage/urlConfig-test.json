@@ -1,7 +1,7 @@
 {
-  "letv": {
-    "dianshiju": "http://top.le.com/tvhp.html",
-    "zongyi":    "http://top.le.com/varhp.html",
-    "dongman":   "http://top.le.com/comichp.html"
+  "imgo": {
+    "dianshiju":"http://www.mgtv.com/top/tv/",
+    "dongman":"http://www.mgtv.com/top/cartoon/",
+    "zongyi":"http://www.mgtv.com/top/show/"
   }
 }

@@ -14,6 +14,7 @@ simply save specific web page content to database and preview data from custom w
 
 * dva - React and redux based, lightweight and elm-style framework. (https://github.com/sorrycc/blog/issues/6) (https://github.com/dvajs/dva)
 * react-scripts - Configuration and scripts for Create React App.  (facebookincubator/create-react-app)
+* redux and React-router
 
 ## express server
 
@@ -21,9 +22,7 @@ quickly set up express server according to the demo(https://github.com/kenanpeng
 
 ## requirements
 
-* provide output param to run this package
-* provide IPC to notify process percentage
-* error log and catch, time record
+* edit video detail and save database
 
 ## webpage query
 

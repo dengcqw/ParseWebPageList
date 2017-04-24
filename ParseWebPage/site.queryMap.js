@@ -1,9 +1,9 @@
 
-var siteIds = require('./site.id.js').siteIds;
+const siteIds = require('./site.id.js').siteIds;
 
 const maxQueryCount = 10;
 
-var queryMap = (function () {
+const queryMap = (function () {
   var queryMap = {};
   queryMap[siteIds.iqiyi] =    function($) {
     var alist = $('.topDetails-list>li').find('h2>a[title]');
@@ -27,6 +27,7 @@ var queryMap = (function () {
       item.title = $(this).text();
       item.url = $(this).parent().attr('href');
       items.push(item);
+      if (i+1>=maxQueryCount) return false;
     });
 
     return new Promise(function(resolve) {
@@ -78,7 +79,4 @@ function parseTitleAndURL(queryResult, $) {
   });
 }
 
-module.exports = {
-  siteIds,
-  queryMap // title and url only
-}
+module.exports = queryMap;

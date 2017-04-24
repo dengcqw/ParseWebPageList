@@ -9,14 +9,14 @@ const { Header, Content, Sider } = Layout;
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
-import {HotListTables, HotListTabs, ItemDetailModal} from './hot_list_component.js'
+import {HotListTables, HotListTabs} from './HotListComponents.js'
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       menus: [],
-      content:[],
+      content:{},
       loading: false,
       displayType:'tabs',
       visible: false
@@ -26,6 +26,7 @@ class App extends React.Component {
     this.fetchHotList = this.fetchHotList.bind(this);
     this.changeDisplayType = this.changeDisplayType.bind(this);
     this.menuKeys = ['0'];
+    this.contentCache = {};
   }
 
   showModal = () => {
@@ -57,14 +58,24 @@ class App extends React.Component {
         }
         return response.json();
       })
-      .then((resjson) => {
-        this.getFileContent(resjson[this.menuKeys[0]]);
-        this.setState({menus: resjson});
+      .then((fileList) => {
+        if (fileList && fileList.length > 0) {
+          this.getFileContent(fileList[this.menuKeys[0]]);
+          this.setState({menus: fileList});
+        } else {
+          this.setState({menus: []});
+        }
       });
   }
 
   getFileContent(fileName) {
-    if (!fileName ) throw new Error('fileName is undefined, can nott get file content');
+    if (!fileName ) throw new Error('fileName is undefined, can not get file content');
+    if (this.contentCache[fileName]) {
+      console.log("----> "+"get file content cache: " + fileName);
+      this.setState({content: this.contentCache[fileName]});
+      return;
+    }
+
     fetch('/api/getContent?filename='+fileName)
       .then(function(response) {
         if (response.status >= 400) {
@@ -74,6 +85,9 @@ class App extends React.Component {
       })
       .then((content) => {
         this.setState({content});
+        if (Object.keys(content).length) {
+          this.contentCache[fileName] = content;
+        }
       });
   }
 

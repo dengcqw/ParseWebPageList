@@ -29,10 +29,10 @@
     "zongyi":    "http://top.pptv.com?type=3",
     "dongman":   "http://top.pptv.com?type=4"
   },
-  "mgtv": {
+  "imgo": {
     "dianshiju":"http://www.mgtv.com/top/tv/",
-    "zongyi":"http://www.mgtv.com/top/cartoon/",
-    "dongman":"http://www.mgtv.com/top/show/"
+    "zongyi":"http://www.mgtv.com/top/show/",
+    "dongman":"http://www.mgtv.com/top/cartoon/"
   },
   "acfun": {
     "dianshiju":"http://www.acfun.cn/rank/list/#cid=68;range=1",

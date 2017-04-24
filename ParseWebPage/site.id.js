@@ -1,16 +1,35 @@
 
-var siteIds = {
+const siteIds = {
   iqiyi:    "iqiyi",
-  acfun:    "acfun",
-  bilibili: "bilibili",
-  mgtv:     "mgtv",
-  sohu:     "sohu",
-  letv:     "letv",
-  qq:       "qq",
-  pptv:     "pptv",
   youku:    "youku",
-  baidu:    "baidu",
-  tv:       "tv"
+  qq:       "qq",
+  sohu:     "sohu",
+  mgtv:     "imgo",
+  letv:     "letv",
+  pptv:     "pptv",
+  bilibili: "bilibili",
+  acfun:    "acfun",
+}
+
+
+const siteNames = (function() {
+  var siteNames = {};
+  siteNames[siteIds.iqiyi] = "爱奇艺";
+  siteNames[siteIds.youku] = "优酷";
+  siteNames[siteIds.qq] = "腾讯";
+  siteNames[siteIds.sohu] = "搜狐";
+  siteNames[siteIds.mgtv] = "芒果TV";
+  siteNames[siteIds.letv] = "乐视";
+  siteNames[siteIds.pptv] = "PPTV";
+  siteNames[siteIds.bilibili] = "B站";
+  siteNames[siteIds.acfun] = "A站";
+  return siteNames;
+})()
+
+const categoryName = {
+  "dianshiju":"电视剧",
+  "zongyi":"综艺",
+  "dongman":"动漫"
 }
 
 function getIdentifier(href) {
@@ -32,14 +51,14 @@ function getIdentifier(href) {
     return siteIds.pptv;
   } else if(href.search('.youku.') >= 0) {
     return siteIds.youku;
-  } else if(href.search('.baidu.') >= 0) {
-    return siteIds.baidu;
   } else {
-    return siteIds.tv;
+    return "unknown";
   }
 }
 
 module.exports = {
   siteIds,
-  getIdentifier
+  siteNames,
+  getIdentifier,
 }
+

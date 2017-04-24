@@ -5,7 +5,8 @@ var cheerio = require('cheerio');
 const md5Hex = require('md5-hex');
 
 var urlConfig = require('./urlConfig.json');
-var siteMgr = require('./site.manager.js');
+//var urlConfig = require('./urlConfig-test.json');
+var siteQueryMap = require('./site.queryMap.js');
 var loadWebPage = require('./loadWebPage.js'); // Promise
 
 var startTime;
@@ -48,7 +49,7 @@ function wrapCategory(urls, queryFn, siteID) {
         });
 
         var elapsedTime = Date.now() - startTime;
-        return {categoryID, result: {hotItems, elapsedTime}}; // <-- category data object
+        return {categoryID, result: {hotItems, elapsedTime, url}}; // <-- category data object
       })
       .catch((err)=>console.log(err));
   });
@@ -60,7 +61,7 @@ function start() {
   startTime = Date.now();
 
   var siteWrappers = _.map(urlConfig, (urls, siteID)=>{
-    var queryFn = siteMgr.queryMap[siteID];
+    var queryFn = siteQueryMap[siteID];
     if (queryFn == undefined) {
       console.log(key + ' not define query function');
       throw new Error('fetch error: ' + siteID + ' ' + JSON.stringify(urls));
@@ -86,6 +87,9 @@ function start() {
 
   return Promise.all(siteWrappers).then(results=>{
     console.log('fetch all done')
+    results = _.keyBy(results, function(result) {
+      return result.siteID;
+    });
     if (this.outputPath) {
       var date = new Date();
       var fileName = date.getFullYear()+'-'+date.getMonth()+'-'+date.getDay()+'-'+date.getHours()+'-'+date.getMinutes()+'.json';
@@ -114,7 +118,7 @@ function getFileNames(callback) {
   let jsonFiles = [];
   console.log("----> output path:"+path);
   fs.readdir(path, (err, files)=> {
-    files.forEach((file)=>{
+    files&&files.forEach((file)=>{
       if (file.startsWith('.')) return;
       var subpath = path + '/' + file;
       if(fs.lstatSync(subpath).isDirectory()){
