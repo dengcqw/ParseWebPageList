@@ -1,0 +1,44 @@
+----> exist tables models before define:  {}
+----> exist tables models:  { capture: capture,
+  album: album,
+  iqiyi_hotlist: iqiyi_hotlist,
+  youku_hotlist: youku_hotlist,
+  qq_hotlist: qq_hotlist,
+  sohu_hotlist: sohu_hotlist,
+  imgo_hotlist: imgo_hotlist,
+  letv_hotlist: letv_hotlist,
+  pptv_hotlist: pptv_hotlist,
+  bilibili_hotlist: bilibili_hotlist,
+  acfun_hotlist: acfun_hotlist }
+Executing (default): CREATE TABLE IF NOT EXISTS `albums` (`urlid` VARCHAR(255) NOT NULL PRIMARY KEY, `docid` VARCHAR(255), `title` VARCHAR(255), `desc` VARCHAR(255), `imgv` VARCHAR(255), `imgh` VARCHAR(255), `updatedAt` DATETIME NOT NULL, `deletedAt` DATETIME);
+Executing (default): CREATE TABLE IF NOT EXISTS `iqiyi_hotlists` (`date` VARCHAR(255) NOT NULL PRIMARY KEY, `url_id_arr` VARCHAR BINARY(255));
+Executing (default): CREATE TABLE IF NOT EXISTS `youku_hotlists` (`date` VARCHAR(255) NOT NULL PRIMARY KEY, `url_id_arr` VARCHAR BINARY(255));
+Executing (default): CREATE TABLE IF NOT EXISTS `qq_hotlists` (`date` VARCHAR(255) NOT NULL PRIMARY KEY, `url_id_arr` VARCHAR BINARY(255));
+Executing (default): CREATE TABLE IF NOT EXISTS `sohu_hotlists` (`date` VARCHAR(255) NOT NULL PRIMARY KEY, `url_id_arr` VARCHAR BINARY(255));
+Executing (default): CREATE TABLE IF NOT EXISTS `imgo_hotlists` (`date` VARCHAR(255) NOT NULL PRIMARY KEY, `url_id_arr` VARCHAR BINARY(255));
+Executing (default): CREATE TABLE IF NOT EXISTS `letv_hotlists` (`date` VARCHAR(255) NOT NULL PRIMARY KEY, `url_id_arr` VARCHAR BINARY(255));
+Executing (default): CREATE TABLE IF NOT EXISTS `pptv_hotlists` (`date` VARCHAR(255) NOT NULL PRIMARY KEY, `url_id_arr` VARCHAR BINARY(255));
+Executing (default): CREATE TABLE IF NOT EXISTS `bilibili_hotlists` (`date` VARCHAR(255) NOT NULL PRIMARY KEY, `url_id_arr` VARCHAR BINARY(255));
+Executing (default): CREATE TABLE IF NOT EXISTS `acfun_hotlists` (`date` VARCHAR(255) NOT NULL PRIMARY KEY, `url_id_arr` VARCHAR BINARY(255));
+Executing (default): CREATE TABLE IF NOT EXISTS `captures` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `date` VARCHAR(255) NOT NULL);
+Executing (default): PRAGMA INDEX_LIST(`albums`)
+Executing (default): PRAGMA INDEX_LIST(`iqiyi_hotlists`)
+Executing (default): PRAGMA INDEX_LIST(`youku_hotlists`)
+Executing (default): PRAGMA INDEX_LIST(`qq_hotlists`)
+Executing (default): PRAGMA INDEX_LIST(`sohu_hotlists`)
+Executing (default): PRAGMA INDEX_LIST(`imgo_hotlists`)
+Executing (default): PRAGMA INDEX_LIST(`letv_hotlists`)
+Executing (default): PRAGMA INDEX_LIST(`pptv_hotlists`)
+Executing (default): PRAGMA INDEX_LIST(`bilibili_hotlists`)
+Executing (default): PRAGMA INDEX_LIST(`acfun_hotlists`)
+Executing (default): PRAGMA INDEX_LIST(`captures`)
+Executing (default): PRAGMA INDEX_INFO(`sqlite_autoindex_albums_1`)
+Executing (default): PRAGMA INDEX_INFO(`sqlite_autoindex_iqiyi_hotlists_1`)
+Executing (default): PRAGMA INDEX_INFO(`sqlite_autoindex_youku_hotlists_1`)
+Executing (default): PRAGMA INDEX_INFO(`sqlite_autoindex_qq_hotlists_1`)
+Executing (default): PRAGMA INDEX_INFO(`sqlite_autoindex_sohu_hotlists_1`)
+Executing (default): PRAGMA INDEX_INFO(`sqlite_autoindex_imgo_hotlists_1`)
+Executing (default): PRAGMA INDEX_INFO(`sqlite_autoindex_letv_hotlists_1`)
+Executing (default): PRAGMA INDEX_INFO(`sqlite_autoindex_pptv_hotlists_1`)
+Executing (default): PRAGMA INDEX_INFO(`sqlite_autoindex_bilibili_hotlists_1`)
+Executing (default): PRAGMA INDEX_INFO(`sqlite_autoindex_acfun_hotlists_1`)

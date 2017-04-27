@@ -8,7 +8,7 @@ var CopyWebpackPlugin = require("copy-webpack-plugin");
 var devConfig = {
   entry: {
     "frontpage.js": ['./client/frontpage', hotMiddlewareScript],
-    "login.js": ['./client/login', hotMiddlewareScript]
+    //"login.js": ['./client/login', hotMiddlewareScript]
   },
   output: {
     filename: './[name]',

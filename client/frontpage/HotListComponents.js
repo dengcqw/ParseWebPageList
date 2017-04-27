@@ -6,7 +6,7 @@ import { Table, Icon, Modal, Button, Tabs } from 'antd';
 const { Column } = Table;
 
 require('./hot_table.css');
-const { siteIds, siteNames } =  require('../../ParseWebPage/site.id.js')
+const { siteIds, siteNames } =  require('../../server/ParseWebPage/site.id.js')
 
 /*
  * hot table list fo all site
