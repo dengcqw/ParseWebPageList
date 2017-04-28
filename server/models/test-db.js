@@ -1,6 +1,6 @@
 
 var Sequelize = require('sequelize')
-var siteIds = require('../../ParseWebPage/site.id.js').siteIds
+var path      = require("path");
 
 var sequelize = new Sequelize('', '', '', {
   dialect: 'sqlite',
@@ -16,58 +16,12 @@ var sequelize = new Sequelize('', '', '', {
   storage: './database.sqlite'
 });
 
+
+var siteModels = sequelize.import(path.join(__dirname, 'model-sites.js'));
+var albumModel = sequelize.import(path.join(__dirname, 'model-album.js'));
+var captureModel = sequelize.import(path.join(__dirname, 'model-capture.js'));
+
 console.log("----> exist tables models before define: ", sequelize.models)
-
-var CaptureTable = sequelize.define('capture', {
-  id: {
-    type: Sequelize.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  date: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    unique: true
-  }
-});
-
-var AlbumTable = sequelize.define('album', {
-  urlid: {
-    type: Sequelize.STRING,
-    primaryKey: true,
-    allowNull: false
-  },
-  docid:Sequelize.STRING,
-  title:Sequelize.STRING,
-  desc:Sequelize.STRING,
-  imgv:Sequelize.STRING,
-  imgh:Sequelize.STRING
-}, {
-  timestamps: true, // 增加updatedAt, createdAt
-  createdAt: false,
-  paranoid: true, // 不直接删除，增加deletedAt
-})
-
-var ListTableMap = {};
-Object.values(siteIds).forEach((siteId, index) => {
-  let Table = sequelize.define(siteId+'_hotlist', {
-    date: {
-      type: Sequelize.STRING,
-      primaryKey: true,
-      allowNull: false,
-      unique: true
-    },
-    urlIds :{
-      type: Sequelize.STRING.BINARY,
-      field: "url_id_arr",
-      get: function() {
-        var urlids = this.getDataValue('urlIds'); // seperated by semicolon
-        return urlids.split(';');
-      }
-    }
-  })
-  ListTableMap[siteId] = Table
-})
 
 // Create tables without re-create
 sequelize.sync({force: false})

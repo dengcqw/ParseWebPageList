@@ -56,9 +56,15 @@ function getIdentifier(href) {
   }
 }
 
+function getSiteModelName(siteId) {
+  return 'Hotlist-' + siteId;
+}
+
+
 module.exports = {
   siteIds,
   siteNames,
   getIdentifier,
+  getSiteModelName
 }
 

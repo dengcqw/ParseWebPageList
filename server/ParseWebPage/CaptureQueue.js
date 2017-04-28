@@ -1,6 +1,6 @@
 
-var urlConfig = require('./urlConfig.json');
-//var urlConfig = require('./urlConfig-test.json');
+//var urlConfig = require('./urlConfig.json');
+var urlConfig = require('./urlConfig-test.json');
 var siteQueryMap = require('./site.queryMap.js');
 
 var _ = require('lodash');
@@ -103,11 +103,11 @@ CaptureQueue.prototype._run = function() {
   let job = this.queue.shift()
   if (job) {
     this.running = true
-    console.log("----> start capture job: ", job.listInfo)
+    console.log("----> start capture job: ", JSON.stringify(job.listInfo))
     console.log("----> remain capture jobs: ", this.queue.length)
     promiseRetry(captureList(job.listInfo), 3, 5000)
       .then((hotList)=>{
-        console.log("----> get hot list: ", job.listInfo)
+        console.log("----> get hot list: ", job.listInfo.siteID, job.listInfo.categoryID)
         this.saveToFile(job.listInfo, hotList)
         this.updateDatabase(job.listInfo, hotList)
 
@@ -116,6 +116,8 @@ CaptureQueue.prototype._run = function() {
         this._run()
       })
       .catch((err)=>{
+        console.log("----> get hot list err: ", job.listInfo.siteID, job.listInfo.categoryID)
+        console.log("----> get hot list err: ", err)
         job.callback(null, err)
         this.running = false
         this._run()
@@ -157,10 +159,7 @@ CaptureQueue.prototype.captureAll = function(callback) {
       listInfo: listInfo,
       callback: (list, err) => {
 
-        if (err) {
-          console.log("----> in captureAll, get err for", listInfo.siteID, listInfo.categoryID)
-          console.log("----> in captureAll, get err:", err)
-        } else if (list) {
+        if (list) {
           let siteID = list.siteID;
           if (!allList[siteID]) allList[siteID] = {}
           allList[siteID][list.categoryID] = Object.assign({}, list.result)
