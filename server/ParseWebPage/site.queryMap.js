@@ -1,7 +1,8 @@
 
 const siteIds = require('./site.id.js').siteIds;
 
-const maxQueryCount = 10;
+// TODO: move to config file
+const maxQueryCount = 5;
 
 const queryMap = (function () {
   var queryMap = {};

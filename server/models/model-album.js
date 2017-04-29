@@ -7,13 +7,14 @@
 module.exports = function(sequelize, DataTypes) {
   var AlbumModel = sequelize.define('Album', {
     urlid: {
-      type: DataTypes.STRING,
+      type: DataTypes.CHAR(16),
       primaryKey: true,
       allowNull: false
     },
-    docid:DataTypes.STRING,
-    title:DataTypes.STRING,
-    desc:DataTypes.STRING,
+    docid:DataTypes.CHAR(32),
+    title:DataTypes.CHAR(100),
+    capturedurl:DataTypes.STRING,
+    desc:DataTypes.TEXT,
     imgv:DataTypes.STRING,
     imgh:DataTypes.STRING
   }, {

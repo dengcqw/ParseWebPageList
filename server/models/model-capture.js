@@ -4,18 +4,18 @@
  * store info about each capture
  */
 module.exports = function(sequelize, DataTypes) {
-  var CaptureModel = sequelize.define('Capture', {
+  var CaptureInfoModel = sequelize.define('CaptureInfo', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
     date: {
-      type: DataTypes.STRING,
+      type: DataTypes.CHAR(10),
       allowNull: false,
       unique: true
     }
   });
-  return CaptureModel;
+  return CaptureInfoModel;
 };
 

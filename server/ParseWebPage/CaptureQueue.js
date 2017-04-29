@@ -6,7 +6,9 @@ var siteQueryMap = require('./site.queryMap.js');
 var _ = require('lodash');
 var fs = require('fs');
 var cheerio = require('cheerio');
-var urlToDocID = require('./urlToDocID.js');
+var urlToUrlID = require('./urlToUrlID.js');
+
+var models = require('../models')
 
 const phantom = require('phantom');
 
@@ -47,7 +49,7 @@ const captureList = ({siteID, categoryID, url})=> () => {
       // 如果是bilibili不删除警号后的数据
       let partStrs = (siteID == 'bilibili')?['?']:['?','#'];
       hotItems = hotItems.map(function(item) {
-        return Object.assign({}, item, {docID: urlToDocID(item.url, partStrs)});
+        return Object.assign({}, item, {urlID: urlToUrlID(item.url, partStrs)});
       });
 
       var elapsedTime = Date.now() - startTime;
@@ -58,17 +60,17 @@ const captureList = ({siteID, categoryID, url})=> () => {
 const promiseRetry = (getPromise, retryCount, interval) =>  new Promise(function(resolve, reject) {
   let timeout = (ms) => new Promise((resolve, reject) => {
     ms = ms || 1000 * 60 * 2;// 120s
-    setTimeout(reject, ms, new Error(`fetch timeout ${ms} ms`));
-  });
+    setTimeout(reject, ms, new Error(`fetch timeout ${ms} ms`))
+  })
   let retryWrapper = () => {
     Promise.race([timeout(interval), getPromise()])
       .then(function(hotList) {
-        resolve(hotList);
+        resolve(hotList)
       })
       .catch(err => {
         retryCount--;
         if (retryCount == 0) {
-          reject(err);
+          reject(err)
         } else {
           retryWrapper()
         }
@@ -129,6 +131,41 @@ CaptureQueue.prototype._run = function() {
 }
 
 CaptureQueue.prototype.updateDatabase = function(listInfo, hotList) {
+  var urlIds = items => items.map((item)=>item.urlID)
+
+  var updateObj = {[hotList.categoryID] :  urlIds(hotList.result.hotItems)}
+  var date = models.createDateKey() // like 2017-04-30
+
+  console.log("----> enqueue update db: ", hotList.siteID, hotList.categoryID, date)
+  models.updateQueue.enqueue(() => {
+    return (
+      models.getSiteModel(listInfo.siteID)
+      .findOrCreate({where: {date}, defaults: updateObj})
+      .spread(function(siteModel, created) {
+        console.log("----> update siteModel database created: ", created)
+        if (created == false) return siteModel.update(updateObj)
+        console.log(siteModel.get({plain: true}))
+      })
+    )
+  })
+  hotList.result.hotItems.forEach(item => {
+    let urlid = item.urlID
+    let updateObj = {capturedurl: item.url, title: item.title}
+    let query = {
+      where: {urlid},
+      defaults: updateObj
+    }
+    models.updateQueue.enqueue(() => {
+      return (
+        models.album.findOrCreate(query)
+        .spread(function(album, created) {
+          console.log("----> update album database created: ", created)
+          if (created == false) return album.update(updateObj)
+          console.log(album.get({plain: true}))
+        })
+      )
+    })
+  })
 }
 
 CaptureQueue.prototype.saveToFile = function(listInfo, hotList) {
@@ -158,7 +195,6 @@ CaptureQueue.prototype.captureAll = function(callback) {
     return {
       listInfo: listInfo,
       callback: (list, err) => {
-
         if (list) {
           let siteID = list.siteID;
           if (!allList[siteID]) allList[siteID] = {}
@@ -174,6 +210,20 @@ CaptureQueue.prototype.captureAll = function(callback) {
     }
   })
   let listCount = jobs.length
+
+  models.updateQueue.enqueue(() => {
+    let date = models.createDateKey()
+    let query = {
+      where: {date}
+    }
+    return (
+      models.capture.findOrCreate(query)
+      .spread(function(captureModel, created) {
+        console.log("----> update capture database created: ", created)
+        console.log(captureModel.get({plain: true}))
+      })
+    )
+  })
 
   this.queue =  this.queue.concat(jobs)
   console.log("----> start capture all total:", jobs.length)

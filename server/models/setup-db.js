@@ -1,41 +1,7 @@
 
-var Sequelize = require('sequelize')
-var path      = require("path");
 
-var sequelize = new Sequelize('', '', '', {
-  dialect: 'sqlite',
-  define: { timestamps: false },
-  logging:()=>{/* custom log here */},
-  pool: {
-    max: 5,
-    min: 0,
-    idle: 10000
-  },
-
-  // SQLite only
-  storage: './database.sqlite'
-});
-
-
-var siteModels = sequelize.import(path.join(__dirname, 'model-sites.js'));
-var albumModel = sequelize.import(path.join(__dirname, 'model-album.js'));
-var captureModel = sequelize.import(path.join(__dirname, 'model-capture.js'));
-
-console.log("----> exist tables models before define: ", sequelize.models)
-
-// Create tables without re-create
-sequelize.sync({force: false})
-  .then(() => {
-    return testCaptureTable()
-  }).then(() => {
-    return testListTable()
-  }).then(() => {
-    console.log("----> "+"finish test")
-  }).catch((err) => {
-    console.log("----> test err: ", err)
-  })
-
-console.log("----> exist tables models: ", sequelize.models)
+var models = require('./index.js')
+var { siteIds, getSiteModelName } = require('../ParseWebPage/site.id.js')
 
 var test_dates = [
   '20170507',
@@ -50,7 +16,7 @@ var testCaptureTable =() => new Promise(function(res, rej) {
 
   var index = 0;
   var insertTable = date=>{
-    CaptureTable
+    models.CaptureInfo
       .findOrCreate({where: {date}})
       .spread(function(capture, created) {
         console.log(capture.get({
@@ -78,8 +44,8 @@ var testListTable = () => new Promise(function(res, rej) {
 
   var index = 0;
   var insertTable = date => {
-    ListTableMap['iqiyi']
-      .findOrCreate({where: {date}, defaults: {urlIds: urlIds[index]}})
+    models[getSiteModelName(siteIds.iqiyi)]
+      .findOrCreate({where: {date}, defaults: {dianshiju: urlIds[index], zongyi:urlIds[index]}})
       .spread(function(capture, created) {
         console.log(capture.get({
           plain: true
@@ -94,3 +60,20 @@ var testListTable = () => new Promise(function(res, rej) {
   }
   insertTable(test_dates[index]);
 })
+
+// create database
+models.sequelize.sync().then(()=>console.log('create database success'))
+return
+
+/* Create tables without re-create
+models.sequelize.sync({force: false})
+  .then(() => {
+    return testCaptureTable()
+  }).then(() => {
+    return testListTable()
+  }).then(() => {
+    console.log("----> "+"finish test")
+  }).catch((err) => {
+    console.log("----> test err: ", err)
+  })
+*/

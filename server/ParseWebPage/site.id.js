@@ -26,7 +26,7 @@ const siteNames = (function() {
   return siteNames;
 })()
 
-const categoryName = {
+const categoryNames = {
   "dianshiju":"电视剧",
   "zongyi":"综艺",
   "dongman":"动漫"
@@ -56,13 +56,14 @@ function getIdentifier(href) {
   }
 }
 
-function getSiteModelName(siteId) {
-  return 'Hotlist-' + siteId;
+function getSiteModelName(siteID) {
+  return siteID+'Hotlist';
 }
 
 
 module.exports = {
   siteIds,
+  categoryNames,
   siteNames,
   getIdentifier,
   getSiteModelName
