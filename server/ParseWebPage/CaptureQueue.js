@@ -1,4 +1,3 @@
-
 //var urlConfig = require('./urlConfig.json');
 var urlConfig = require('./urlConfig-test.json');
 var siteQueryMap = require('./site.queryMap.js');
@@ -157,10 +156,11 @@ CaptureQueue.prototype.updateDatabase = function(listInfo, hotList) {
     }
     models.updateQueue.enqueue(() => {
       return (
-        models.album.findOrCreate(query)
+        models.Album.findOrCreate(query)
         .spread(function(album, created) {
           console.log("----> update album database created: ", created)
-          if (created == false) return album.update(updateObj)
+          // NOTE: this data need not updated again
+          // if (created == false) return album.update(updateObj)
           console.log(album.get({plain: true}))
         })
       )
@@ -217,7 +217,7 @@ CaptureQueue.prototype.captureAll = function(callback) {
       where: {date}
     }
     return (
-      models.capture.findOrCreate(query)
+      models.CaptureInfo.findOrCreate(query)
       .spread(function(captureModel, created) {
         console.log("----> update capture database created: ", created)
         console.log(captureModel.get({plain: true}))

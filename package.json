@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/dengcqw/ParseWebPageList#readme",
   "dependencies": {
+    "body-parser": "^1.17.1",
     "cheerio": "^0.22.0",
     "consolidate": "^0.14.5",
     "ejs": "^2.5.6",

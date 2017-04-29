@@ -23,13 +23,13 @@ var sequelize = new Sequelize('', '', '', {
 
 var siteModels = sequelize.import(path.join(__dirname, 'model-sites.js'));
 var albumModel = sequelize.import(path.join(__dirname, 'model-album.js'));
-var captureModel = sequelize.import(path.join(__dirname, 'model-capture.js'));
+var captureInfoModel = sequelize.import(path.join(__dirname, 'model-captureInfo.js'));
 
 var db = {}
 
 siteModels.forEach(model => db[model.name] = model)
-db.album = albumModel
-db.capture = captureModel
+db.Album = albumModel
+db.CaptureInfo = captureInfoModel
 
 console.log("----> exist tables models before define: ", sequelize.models)
 

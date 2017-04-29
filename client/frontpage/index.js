@@ -10,6 +10,7 @@ require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
 import {HotListTables, HotListTabs} from './HotListComponents.js'
+const { siteIds, categoryNames } = require('../../server/ParseWebPage/site.id.js')
 
 class App extends React.Component {
   constructor(props) {
@@ -22,7 +23,7 @@ class App extends React.Component {
       visible: false
     }
     this.updateMenu = this.updateMenu.bind(this);
-    this.getFileContent = this.getFileContent.bind(this);
+    this.getHotList = this.getHotList.bind(this);
     this.fetchHotList = this.fetchHotList.bind(this);
     this.changeDisplayType = this.changeDisplayType.bind(this);
     this.menuKeys = ['0'];
@@ -51,32 +52,33 @@ class App extends React.Component {
   }
 
   updateMenu() {
-    fetch('/api/getFilenames')
+    fetch('/api/captureInfo')
       .then(function(response) {
         if (response.status >= 400) {
           throw new Error("Bad response from server");
         }
         return response.json();
       })
-      .then((fileList) => {
-        if (fileList && fileList.length > 0) {
-          this.getFileContent(fileList[this.menuKeys[0]]);
-          this.setState({menus: fileList});
+      .then((dates) => {
+        if (dates && dates.length > 0) {
+          this.getHotList(dates[this.menuKeys[0]]);
+          this.setState({menus: dates});
         } else {
           this.setState({menus: []});
         }
       });
   }
 
-  getFileContent(fileName) {
-    if (!fileName ) throw new Error('fileName is undefined, can not get file content');
-    if (this.contentCache[fileName]) {
-      console.log("----> "+"get file content cache: " + fileName);
-      this.setState({content: this.contentCache[fileName]});
+  // read list from database
+  getHotList(dateString) {
+    if (!dateString ) throw new Error('fileName is undefined, can not get file content');
+    if (this.contentCache[dateString]) {
+      console.log("----> "+"get content cache: " + dateString);
+      this.setState({content: this.contentCache[dateString]});
       return;
     }
 
-    fetch('/api/getContent?filename='+fileName)
+    fetch('/api/getHotList?date='+dateString)
       .then(function(response) {
         if (response.status >= 400) {
           throw new Error("Bad response from server");
@@ -84,13 +86,46 @@ class App extends React.Component {
         return response.json();
       })
       .then((content) => {
+        debugger;
+        console.log("----> ", content)
+        let urlids = []
+        Object.keys(categoryNames).forEach(categoryID => {
+          Object.values(siteIds).forEach(siteID => {
+            if (content[siteID] && content[siteID][categoryID]) {
+              urlids = urlids.concat(content[siteID][categoryID])
+            }
+          })
+        })
+        this.getAlbums(urlids)
         this.setState({content});
         if (Object.keys(content).length) {
-          this.contentCache[fileName] = content;
+          this.contentCache[dateString] = content;
         }
       });
   }
 
+  getAlbums(urlIds) {
+    //if (urlIds instanceOf Array)
+    //if (!urlIds instanceOf String) throw new Error('getAlbums urlIds should be array or string')
+    fetch('/api/getAlbums', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(urlIds)
+    }).then(function(response) {
+      if (response.status >= 400) {
+        throw new Error("Bad response from server");
+      }
+      return response.json();
+    }).then((content) => {
+        debugger;
+        console.log("----> ", content)
+      });
+  }
+
+  // fetch new list from website
   fetchHotList() {
     this.setState({loading: true});
     //setTimeout(()=>{this.setState({loading: false})}, 1000 * 60);
@@ -117,7 +152,7 @@ class App extends React.Component {
   menuClickAction = (item, key, keyPath) => {
     this.menuKeys = [item.key];
     console.log("----> key: "+item.key);
-    this.getFileContent(this.state.menus[item.key]);
+    this.getHotList(this.state.menus[item.key]);
   }
 
   render() {

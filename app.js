@@ -2,6 +2,7 @@
 var express = require('express'),
     path = require('path'),
     consolidate = require('consolidate');
+var bodyParser = require('body-parser');
 
 var app = express();
 var isDev = process.env.NODE_ENV !== 'production';
@@ -14,6 +15,9 @@ app.set('view engine', 'html');
 
 // res.render() serach path
 app.set('views', path.resolve(__dirname, './server/views'));
+
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 // local variables for all views
 app.locals.env = process.env.NODE_ENV || 'dev';
