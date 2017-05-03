@@ -12,7 +12,7 @@ function* getAlbumsAsync(action) {
 }
 
 export default function* watchGetAlbumsAsync() {
-  console.log("----> start update menus")
+  console.log("----> watch GET_ALBUMS_ASYNC")
   yield takeLatest('GET_ALBUMS_ASYNC', getAlbumsAsync)
 }
 

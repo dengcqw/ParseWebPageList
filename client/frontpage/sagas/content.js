@@ -22,7 +22,7 @@ function* getContentAsync(action) {
 }
 
 export default function* watchGetContentAsync() {
-  console.log("----> start update menus")
+  console.log("----> watch GET_CONTENT_ASYNC")
   yield takeLatest('GET_CONTENT_ASYNC', getContentAsync)
 }
 

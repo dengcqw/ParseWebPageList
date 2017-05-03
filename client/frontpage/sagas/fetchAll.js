@@ -13,6 +13,7 @@ function* fetchAllAsync(action) {
 }
 
 export default function* watchfetchAllAsync() {
+  console.log("----> watch FETCH_ALL_ASYNC")
   yield takeLatest('FETCH_ALL_ASYNC', fetchAllAsync)
 }
 

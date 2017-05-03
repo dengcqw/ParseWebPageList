@@ -16,7 +16,7 @@ function* updateMenusAsync() {
 }
 
 export default function* watchUpdateMenus() {
-  console.log("----> start update menus")
+  console.log("----> watch UPDATE_MENU_ASYNC")
   yield takeLatest('UPDATE_MENU_ASYNC', updateMenusAsync)
 }
 

@@ -36,10 +36,10 @@ function selectedTabReducer(state = {}, action = {}) {
   }
 }
 
-function selectedMenuReducer(state = [], action = {}) {
+function selectedMenuReducer(state = '', action = {}) {
   switch (action.type) {
     case uiStateActions.updateSelectedMenu:
-      return [].concat(action.selectedMenu)
+      return action.selectedMenu
     default:
       return state
   }

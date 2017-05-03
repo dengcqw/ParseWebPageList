@@ -8,47 +8,32 @@ import { Layout, Menu, Breadcrumb, Icon, Button, Radio } from 'antd';
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 
-import {HotListTables, HotListTabs} from './components/HotListComponents.js'
+import { HotListTabs } from './components/HotListTabs.js'
+import { HotListTables } from './components/HotListTables.js'
 const { siteIds, categoryNames } = require('../../server/ParseWebPage/site.id.js')
 
-import {updateMenuActionCreator} from './sagas/menus.js'
-import {getContentActionCreator} from './sagas/content.js'
-import {updateDisplayTypeAction} from './reducers/uistate.js'
-import {getAlbumsActionCreator} from './sagas/albums.js'
-import {fetchAllActionCreator} from './sagas/fetchAll.js'
+import { updateMenuActionCreator } from './sagas/menus.js'
+import { getContentActionCreator } from './sagas/content.js'
+import { getAlbumsActionCreator } from './sagas/albums.js'
+import { fetchAllActionCreator } from './sagas/fetchAll.js'
+
+import {
+  updateDisplayTypeAction,
+  updateSelectedTabAction,
+  updateSelectedMenuAction
+} from './reducers/uistate.js'
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      content:{},
-      loading: false,
-      displayType:'Tabs',
       visible: false
     }
     this.updateMenu = this.props.updateMenu
     this.fetchHotList = this.props.fetchAll
     this.changeDisplayType = this.changeDisplayType.bind(this)
-    this.menuKeys = ['0'];
   }
 
-  showModal = () => {
-    this.setState({
-      visible: true,
-    });
-  }
-  handleOk = (e) => {
-    console.log(e);
-    this.setState({
-      visible: false,
-    });
-  }
-  handleCancel = (e) => {
-    console.log(e);
-    this.setState({
-      visible: false,
-    });
-  }
   componentWillMount () {
     this.updateMenu();
   }
@@ -59,14 +44,16 @@ class App extends React.Component {
   }
 
   menuClickAction = (item, key, keyPath) => {
-    this.menuKeys = [item.key];
-    console.log("----> click menu key: ", item.key);
-    this.props.getContent(this.props.menus[item.key]);
+    let menuName = this.props.menus[item.key]
+    console.log("----> click menu: ", menuName)
+    this.props.getContent(menuName)
+    this.props.selectMenu(menuName)
   }
 
   render() {
-    const { content } = this.state;
-    const { menus, isFetchingAll, displayType } = this.props;
+    console.log("----> render")
+    const { menus, isFetchingAll, displayType, content, selectTab, selectedMenu, selectedTab } = this.props;
+    let menuKey = menus.indexOf(selectedMenu)
     return (
       <Layout>
         <Header className="header">
@@ -81,13 +68,13 @@ class App extends React.Component {
               defaultOpenKeys={['sub1']}
               style={{ height: '100%' }}
               onClick={this.menuClickAction}
-              defaultSelectedKeys={this.menuKeys}
-              selectedKeys={this.menuKeys}
+              defaultSelectedKeys={[menuKey]}
+              selectedKeys={[menuKey]}
             >
               <SubMenu key="sub1" title={<span><Icon type="user" />榜单数据</span>}>
               {
                 menus.map(function(name, i){
-                  return <Menu.Item key={''+i}>{name}</Menu.Item>
+                  return <Menu.Item key={i}>{name}</Menu.Item>
                 })
               }
               </SubMenu>
@@ -101,8 +88,8 @@ class App extends React.Component {
             <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
             {
               displayType == 'Tabs'
-              ? <HotListTabs content={content}/>
-              : <HotListTables content={content}/>
+              ? <HotListTabs content={content} onSelect={selectTab}/>
+              : <HotListTables content={content} onSelect={selectTab}/>
             }
             </Content>
           </Layout>
@@ -112,21 +99,33 @@ class App extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  isFetchingAll: state.uistate.fetchAllState,
-  displayType: state.uistate.displayType,
-  selectedTabs: state.uistate.selectedTabs,
-  selectedMenu: state.uistate.selectedMenu,
-  menus: state.menus,
-})
+const mapStateToProps = (state) => {
+  let selectedMenu = state.uistate.selectedMenu
+  let menus = state.menus
+  if (selectedMenu == '' && menus.length) {
+    selectedMenu = menus[0]
+  }
+  let content = state.content[selectedMenu] || {}
+  return {
+    isFetchingAll: state.uistate.fetchAllState,
+    displayType: state.uistate.displayType,
+    selectedTabs: state.uistate.selectedTabs,
+    menus,
+    selectedMenu,
+    content,
+  }
+}
 const mapDispatchToProps = (dispatch) => {
   return {
+    // async actions
     fetchAll: bindActionCreators(fetchAllActionCreator, dispatch),
     updateMenu: bindActionCreators(updateMenuActionCreator, dispatch),
     getContent: bindActionCreators(getContentActionCreator, dispatch),
-    changeDisplayType: bindActionCreators(updateDisplayTypeAction, dispatch),
     getAlbums: bindActionCreators(getAlbumsActionCreator, dispatch),
-    //tabChanged: bindActionCreators(todoActionCreators, dispatch),
+    // sync ui state actions
+    changeDisplayType: bindActionCreators(updateDisplayTypeAction, dispatch),
+    selectTab: bindActionCreators(updateSelectedTabAction, dispatch),
+    selectMenu: bindActionCreators(updateSelectedMenuAction, dispatch),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(App)
