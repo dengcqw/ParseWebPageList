@@ -3,3 +3,4 @@ output
 public
 .DS_Store
 api.js
+database.db

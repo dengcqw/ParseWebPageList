@@ -27,7 +27,7 @@ const apiMap = {
     models.CaptureInfo.findAll({
       order: 'date DESC'
     }).then(infos => {
-      res.send(infos.map(info => info.date))
+      res.send(infos)
     }).catch(err => res.sendStatus(503))
   },
   getHotList: (req, res) => { // send all the urlid

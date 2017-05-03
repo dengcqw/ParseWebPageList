@@ -1,7 +1,8 @@
 
 import ReactDOM from 'react-dom'
 import React from 'react'
-import { connect, bindActionCreators } from 'react-redux'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
 import { Layout, Menu, Breadcrumb, Icon, Button, Radio } from 'antd';
 const { SubMenu } = Menu;
@@ -10,22 +11,25 @@ const { Header, Content, Sider } = Layout;
 import {HotListTables, HotListTabs} from './components/HotListComponents.js'
 const { siteIds, categoryNames } = require('../../server/ParseWebPage/site.id.js')
 
+import {updateMenuActionCreator} from './sagas/menus.js'
+import {getContentActionCreator} from './sagas/content.js'
+import {updateDisplayTypeAction} from './reducers/uistate.js'
+import {getAlbumsActionCreator} from './sagas/albums.js'
+import {fetchAllActionCreator} from './sagas/fetchAll.js'
+
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      menus: [],
       content:{},
       loading: false,
-      displayType:'tabs',
+      displayType:'Tabs',
       visible: false
     }
-    this.updateMenu = this.updateMenu.bind(this);
-    this.getHotList = this.getHotList.bind(this);
-    this.fetchHotList = this.fetchHotList.bind(this);
-    this.changeDisplayType = this.changeDisplayType.bind(this);
+    this.updateMenu = this.props.updateMenu
+    this.fetchHotList = this.props.fetchAll
+    this.changeDisplayType = this.changeDisplayType.bind(this)
     this.menuKeys = ['0'];
-    this.contentCache = {};
   }
 
   showModal = () => {
@@ -49,116 +53,24 @@ class App extends React.Component {
     this.updateMenu();
   }
 
-  updateMenu() {
-    fetch('/api/captureInfo')
-      .then(function(response) {
-        if (response.status >= 400) {
-          throw new Error("Bad response from server");
-        }
-        return response.json();
-      })
-      .then((dates) => {
-        if (dates && dates.length > 0) {
-          this.getHotList(dates[this.menuKeys[0]]);
-          this.setState({menus: dates});
-        } else {
-          this.setState({menus: []});
-        }
-      });
-  }
-
-  // read list from database
-  getHotList(dateString) {
-    if (!dateString ) throw new Error('fileName is undefined, can not get file content');
-    if (this.contentCache[dateString]) {
-      console.log("----> "+"get content cache: " + dateString);
-      this.setState({content: this.contentCache[dateString]});
-      return;
-    }
-
-    fetch('/api/getHotList?date='+dateString)
-      .then(function(response) {
-        if (response.status >= 400) {
-          throw new Error("Bad response from server");
-        }
-        return response.json();
-      })
-      .then((content) => {
-        debugger;
-        console.log("----> ", content)
-        let urlids = []
-        Object.keys(categoryNames).forEach(categoryID => {
-          Object.values(siteIds).forEach(siteID => {
-            if (content[siteID] && content[siteID][categoryID]) {
-              urlids = urlids.concat(content[siteID][categoryID])
-            }
-          })
-        })
-        this.getAlbums(urlids)
-        this.setState({content});
-        if (Object.keys(content).length) {
-          this.contentCache[dateString] = content;
-        }
-      });
-  }
-
-  getAlbums(urlIds) {
-    //if (urlIds instanceOf Array)
-    //if (!urlIds instanceOf String) throw new Error('getAlbums urlIds should be array or string')
-    fetch('/api/getAlbums', {
-      method: 'post',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(urlIds)
-    }).then(function(response) {
-      if (response.status >= 400) {
-        throw new Error("Bad response from server");
-      }
-      return response.json();
-    }).then((content) => {
-        debugger;
-        console.log("----> ", content)
-      });
-  }
-
-  // fetch new list from website
-  fetchHotList() {
-    this.setState({loading: true});
-    //setTimeout(()=>{this.setState({loading: false})}, 1000 * 60);
-    fetch('/api/fetchAll')
-      .then(function(response) {
-        if (response.status >= 400) {
-          throw new Error("Bad response from server");
-        }
-        return response.text();
-      })
-      .then((content) => {
-        debugger;
-        this.menuKeys =['0'];
-        this.updateMenu();
-        this.setState({content, loading: false});
-      });
-  }
-
   changeDisplayType(e) {
-    console.log("----> switch to "+e.target.value);
-    this.setState({displayType: e.target.value});
+    console.log("----> switch to "+e.target.value)
+    this.props.changeDisplayType(e.target.value)
   }
 
   menuClickAction = (item, key, keyPath) => {
     this.menuKeys = [item.key];
-    console.log("----> key: "+item.key);
-    this.getHotList(this.state.menus[item.key]);
+    console.log("----> click menu key: ", item.key);
+    this.props.getContent(this.props.menus[item.key]);
   }
 
   render() {
-    const { menus, content, displayType} = this.state;
+    const { content } = this.state;
+    const { menus, isFetchingAll, displayType } = this.props;
     return (
       <Layout>
         <Header className="header">
-          <Button type="primary" loading={this.state.loading} onClick={this.fetchHotList}>
+          <Button type="primary" loading={isFetchingAll} onClick={this.fetchHotList}>
             爬取榜单
           </Button>
         </Header>
@@ -183,12 +95,12 @@ class App extends React.Component {
           </Sider>
           <Layout style={{ padding: '0 24px 24px 24px' }}>
            <Radio.Group style={{margin:'20px'}} value={displayType} onChange={this.changeDisplayType}>
-              <Radio.Button value="tabs">选项卡</Radio.Button>
-              <Radio.Button value="tables">表格</Radio.Button>
+              <Radio.Button value="Tabs">选项卡</Radio.Button>
+              <Radio.Button value="Tables">表格</Radio.Button>
             </Radio.Group>
             <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
             {
-              displayType == 'tabs'
+              displayType == 'Tabs'
               ? <HotListTabs content={content}/>
               : <HotListTables content={content}/>
             }
@@ -201,17 +113,19 @@ class App extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  isFetching: state.isFetching,
-  displayType: state.displayType,
+  isFetchingAll: state.uistate.fetchAllState,
+  displayType: state.uistate.displayType,
+  selectedTabs: state.uistate.selectedTabs,
+  selectedMenu: state.uistate.selectedMenu,
   menus: state.menus,
-  tab: state.tab,
 })
 const mapDispatchToProps = (dispatch) => {
   return {
-    //fetchAll: bindActionCreators(todoActionCreators, dispatch),
-    //fetchMenu: bindActionCreators(todoActionCreators, dispatch),
-    //fetchContent: bindActionCreators(todoActionCreators, dispatch),
-    //changeDisplayType: bindActionCreators(todoActionCreators, dispatch),
+    fetchAll: bindActionCreators(fetchAllActionCreator, dispatch),
+    updateMenu: bindActionCreators(updateMenuActionCreator, dispatch),
+    getContent: bindActionCreators(getContentActionCreator, dispatch),
+    changeDisplayType: bindActionCreators(updateDisplayTypeAction, dispatch),
+    getAlbums: bindActionCreators(getAlbumsActionCreator, dispatch),
     //tabChanged: bindActionCreators(todoActionCreators, dispatch),
   }
 }

@@ -12,7 +12,7 @@ export default function menusReducer(state = [], action = {}) {
   }
 }
 
-export function createMenusAction(menus) {
+export function updateMenusAction(menus) {
   return {
     type: menusActions.updateMenus,
     menus
