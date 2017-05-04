@@ -12,16 +12,55 @@ const { siteNames, categoryNames } =  require('../../../server/ParseWebPage/site
 export default class SiteTable extends React.Component {
   constructor (props) {
     super(props)
+    this.today = new Date().toISOString().slice(0, 10)
   }
 
   static defaultProps = {
     siteContent: {},
     showTitle:true,
     siteID:"",  /* isRequired prop */
-  };
+    date:''
+  }
+
+  renderCategoryTitle(categoryID) {
+    let siteID = this.props.siteID
+    let categoryURL = `/api/redirectHotPage?categoryid=${categoryID}&siteid=${siteID}`
+    return (
+      <span
+        className='category-name'
+        width='50px' >
+        {categoryNames[categoryID]}
+        <a href={categoryURL} target='_blank'><Icon type="link"/></a>
+        {
+          this.today == this.props.date
+          ? (
+            <Button
+              size='small'
+              style={{marginLeft:'20px'}}
+              onClick={()=>fetchCategoryList()} >
+              重新获取
+            </Button>
+          ) : null
+        }
+      </span>
+    )
+  }
+
+  renderCategory(categoryID) {
+    let hotItems = this.props.siteContent[categoryID];
+    let siteID = this.props.siteID;
+    return (
+      <CategoryTable
+        className='category-tb'
+        hotItems={hotItems}
+        categoryID={categoryID}
+        siteID={siteID} />
+    )
+  }
 
   render () {
-    const {siteContent, showTitle, siteID} = this.props;
+    const { siteContent, showTitle, siteID } = this.props;
+    let categoryURL = ""
     return (
       <div>
       {
@@ -30,32 +69,28 @@ export default class SiteTable extends React.Component {
         : null
       }
       {
-        (siteContent && siteContent.siteID/* valid content should has its siteID */)
-        ? (["dianshiju", "zongyi", "dongman"].map(function(categoryID) {
-          if (!siteContent[categoryID]) {
-            return null;
-          }
-          let hotItems = siteContent[categoryID].hotItems;
-          let categoryURL = siteContent[categoryID].url;
-          let contentSiteID = siteContent.siteID;
+        ["dianshiju", "zongyi", "dongman"].map((categoryID) => {
           return (
             <div style={{float:"left", marginRight:'40px'}}>
-              <span className='category-name' width='50px'>{categoryNames[categoryID]}<a href={categoryURL} target='_blank'><Icon type="link" /></a></span>
-              <CategoryTable
-                className='category-tb'
-                hotItems={hotItems}
-                categoryID={categoryID}
-                siteID={contentSiteID} />
+              {
+                this.renderCategoryTitle(categoryID)
+              }
+              {
+                this.renderCategory(categoryID)
+              }
             </div>
           )
-        }))
-        : <p style={{color:'red'}}>{siteNames[siteID]}数据为空</p>
+        })
       }
         <div className='clear'></div>
       </div>
     )
   }
 }
+
+/*
+          */
+
 
 /*
  * data example
@@ -113,15 +148,16 @@ class CategoryTable extends React.Component {
   }
 
   render () {
-    const {hotItems} = this.props;
-    if (hotItems.length && ! hotItems[0].key) {
-      hotItems.forEach(function(item, i) {
-        item.key = 'item' + i;
-      });
-    }
+    const {hotItems} = this.props
+    //if (hotItems.length && ! hotItems[0].key) {
+      //hotItems.forEach(function(item, i) {
+        //item.key = 'item' + i;
+      //});
+    //}
+    let maphotItems = hotItems.map(item=>({'title':item}))
     return (
       <Table
-      dataSource={hotItems}
+      dataSource={maphotItems}
       pagination={false}
       size='small'
       >

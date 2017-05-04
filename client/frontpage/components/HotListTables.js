@@ -14,6 +14,7 @@ export class HotListTables extends React.Component {
 
   static defaultProps = {
     content: {}, // json file content
+    date:''
   };
 
   render () {
@@ -22,7 +23,7 @@ export class HotListTables extends React.Component {
       {
         Object.values(siteIds).map((siteID, i) => {
           let content = this.props.content[siteID];
-          return <SiteTable content={content} siteID={siteID}/>
+          return <SiteTable content={content} siteID={siteID} date={this.props.date}/>
         })
       }
       </div>

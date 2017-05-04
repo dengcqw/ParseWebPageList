@@ -6,6 +6,7 @@ const { parseCatetory, parseAll } = require('../ParseWebPage');
 const { requestDetail } = require('./api.js')
 const models = require('../models')
 const {siteIds, categoryNames} = require('../ParseWebPage/site.id.js')
+const urlConfig = require('../ParseWebPage/urlConfig.json')
 
 const apiMap = {
   fetchAll: (req, res) => {
@@ -87,6 +88,14 @@ const apiMap = {
           })
       })
     })
+  },
+  redirectHotPage: (req, res) => {
+    try {
+      let hotPageURL = urlConfig[req.query.siteid][req.query.categoryid]
+      res.redirect(hotPageURL)
+    }catch(e) {
+      res.sendStatus(404)
+    }
   }
 }
 

@@ -94,8 +94,8 @@ class App extends React.Component {
             <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
             {
               displayType == 'Tabs'
-              ? <HotListTabs content={content} selectedTab={selectedTab} onSelect={this.selectTab}/>
-              : <HotListTables content={content} />
+              ? <HotListTabs content={content} selectedTab={selectedTab} onSelect={this.selectTab} date={selectedMenu}/>
+              : <HotListTables content={content} date={selectedMenu}/>
             }
             </Content>
           </Layout>
