@@ -12,7 +12,9 @@ export function* watchAndLog() {
   while(true) {
     const action = yield take('*')
     console.log('action', action)
-    console.log('state after', yield select())
+    if (!action.type.includes('ASYNC')) {
+      console.log('state after', yield select())
+    }
   }
 }
 

@@ -6,10 +6,14 @@ const { Column } = Table;
 
 const { siteNames, categoryNames } =  require('../../../server/ParseWebPage/site.id.js')
 
+const { fetchCategoryActionCreator } = require('../sagas/fetchCategory.js')
+
+import { connect } from 'react-redux'
+
 /*
  * hot table of each site
  */
-export default class SiteTable extends React.Component {
+class SiteTable extends React.Component {
   constructor (props) {
     super(props)
     this.today = new Date().toISOString().slice(0, 10)
@@ -20,6 +24,11 @@ export default class SiteTable extends React.Component {
     showTitle:true,
     siteID:"",  /* isRequired prop */
     date:''
+  }
+
+  refetchButtonClicked = (siteID, categoryID)=> {
+    console.log("----> fetch category")
+    this.props.dispatch(fetchCategoryActionCreator({siteID, categoryID}))
   }
 
   renderCategoryTitle(categoryID) {
@@ -37,7 +46,7 @@ export default class SiteTable extends React.Component {
             <Button
               size='small'
               style={{marginLeft:'20px'}}
-              onClick={()=>fetchCategoryList()} >
+              onClick={() => this.refetchButtonClicked(siteID, categoryID)} >
               重新获取
             </Button>
           ) : null
@@ -52,7 +61,7 @@ export default class SiteTable extends React.Component {
     return (
       <CategoryTable
         className='category-tb'
-        hotItems={hotItems}
+        hotItems={hotItems || []}
         categoryID={categoryID}
         siteID={siteID} />
     )
@@ -60,7 +69,6 @@ export default class SiteTable extends React.Component {
 
   render () {
     const { siteContent, showTitle, siteID } = this.props;
-    let categoryURL = ""
     return (
       <div>
       {
@@ -88,9 +96,7 @@ export default class SiteTable extends React.Component {
   }
 }
 
-/*
-          */
-
+export default connect()(SiteTable)
 
 /*
  * data example
@@ -154,7 +160,7 @@ class CategoryTable extends React.Component {
         //item.key = 'item' + i;
       //});
     //}
-    let maphotItems = hotItems.map(item=>({'title':item}))
+    let maphotItems = hotItems.map((item, index) => ({'title':item, key:index}))
     return (
       <Table
       dataSource={maphotItems}

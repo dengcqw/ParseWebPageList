@@ -26,7 +26,7 @@ UpdateQueue.prototype._run = function() {
       })
   } else {
     this.running = false
-    console.log("----> update queue is empry; stop running")
+    console.log("----> update queue is empty; stop running")
   }
 }
 

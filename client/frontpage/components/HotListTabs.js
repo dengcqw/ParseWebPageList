@@ -32,7 +32,7 @@ export class HotListTabs extends React.Component {
       type="card" animated={false} defaultActiveKey="iqiyi">
       {
         Object.values(siteIds).map((siteID, i) => {
-          let siteContent = this.props.content[siteID]
+          let siteContent = this.props.content[siteID] || {}
           return (
             <Tabs.TabPane tab={siteNames[siteID]} key={siteID}>
               <SiteTable siteContent={siteContent} showTitle={false} siteID={siteID} date={date} />

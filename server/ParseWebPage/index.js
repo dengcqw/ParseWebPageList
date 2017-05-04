@@ -17,14 +17,19 @@ const parseAll = () => new Promise(function(res, rej) {
   }
 })
 
-const parseCatetory = (siteID, categoryID) => new Promise(function(res, rej) {
+const parseCategory = (siteID, categoryID) => new Promise(function(res, rej) {
   try {
     let url = urlConfig[siteID][categoryID]
+    console.log("----> start parse category:", siteID, categoryID)
+    if (!url) rej(new Error('this catetory not exist'))
     captureQueue.captureList(
       {siteID, categoryID, url},
       (list, err) => {
         if (list) {
-          res(list)
+          let content = {}
+          content[list.siteID] = {}
+          content[list.siteID][list.categoryID] = list.result
+          res(content)
         } else {
           rej(err)
         }
@@ -37,5 +42,5 @@ const parseCatetory = (siteID, categoryID) => new Promise(function(res, rej) {
 
 module.exports = {
   parseAll,
-  parseCatetory
+  parseCategory
 };

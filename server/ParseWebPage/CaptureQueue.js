@@ -125,7 +125,7 @@ CaptureQueue.prototype._run = function() {
       })
   } else {
     this.running = false
-    console.log("----> capture queue is empry; stop running")
+    console.log("----> capture queue is empty; stop running")
   }
 }
 
@@ -181,7 +181,7 @@ CaptureQueue.prototype.saveToFile = function(listInfo, hotList) {
 }
 
 CaptureQueue.prototype.captureList = function(listInfo, callback) {
-  captureQueue.push({listInfo, callback})
+  this.queue.push({listInfo, callback})
   this._run()
 }
 

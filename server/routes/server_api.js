@@ -2,7 +2,7 @@
 const express = require('express'),
   router = express.Router();
 
-const { parseCatetory, parseAll } = require('../ParseWebPage');
+const { parseCategory, parseAll } = require('../ParseWebPage');
 const { requestDetail } = require('./api.js')
 const models = require('../models')
 const {siteIds, categoryNames} = require('../ParseWebPage/site.id.js')
@@ -15,9 +15,9 @@ const apiMap = {
       .catch(err => res.sendStatus(503))
   },
   fetchCatetory: (req, res) => {
-    parseCatetory(req.query.siteid, req.query.categoryid)
+    parseCategory(req.query.siteid, req.query.categoryid)
       .then(list => res.send(list))
-      .catch(err => res.sendStatus(503))
+      .catch(err => console.log(err), res.sendStatus(503))
   },
   itemDetail: (req, res) => {
     requestDetail(req.query)

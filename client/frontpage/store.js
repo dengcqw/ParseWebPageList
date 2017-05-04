@@ -22,7 +22,10 @@ const store = createStore(
     )
   )
 )
-sagaMiddleware.run(rootSaga)
+const rootTask = sagaMiddleware.run(rootSaga)
+rootTask.done.catch(function (err) {
+    console.log("Error in Sagas", err)
+})
 
 export default store
 
