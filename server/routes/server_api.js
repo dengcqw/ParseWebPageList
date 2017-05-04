@@ -15,9 +15,9 @@ const apiMap = {
       .catch(err => res.sendStatus(503))
   },
   fetchCatetory: (req, res) => {
-    parseCategory(req.query.siteid, req.query.categoryid)
+    parseCategory(req.query.siteid, req.query.categoryid, req.query.date)
       .then(list => res.send(list))
-      .catch(err => console.log(err), res.sendStatus(503))
+      .catch(err => res.sendStatus(503))
   },
   itemDetail: (req, res) => {
     requestDetail(req.query)

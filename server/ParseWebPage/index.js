@@ -26,10 +26,7 @@ const parseCategory = (siteID, categoryID) => new Promise(function(res, rej) {
       {siteID, categoryID, url},
       (list, err) => {
         if (list) {
-          let content = {}
-          content[list.siteID] = {}
-          content[list.siteID][list.categoryID] = list.result
-          res(content)
+          res(list)
         } else {
           rej(err)
         }

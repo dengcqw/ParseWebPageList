@@ -198,7 +198,7 @@ CaptureQueue.prototype.captureAll = function(callback) {
         if (list) {
           let siteID = list.siteID;
           if (!allList[siteID]) allList[siteID] = {}
-          allList[siteID][list.categoryID] = Object.assign({}, list.result)
+          allList[siteID][list.categoryID] = Object.assign({}, list.result.hotItems.map(item=>item.urlID))
         }
 
         listCount--;

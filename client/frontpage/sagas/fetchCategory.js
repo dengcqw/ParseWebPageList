@@ -6,7 +6,11 @@ import Api from '../services'
 
 function* fetchCatetoryAsync(action) {
   let content = yield Api.fetchCatetory(action.params)
-  yield put(updateCategoryAction(content))
+  if (content) {
+    yield put(updateCategoryAction(content))
+  } else {
+    // error notif
+  }
 }
 
 export default function* watchFetchCategory() {
