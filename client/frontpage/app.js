@@ -43,6 +43,12 @@ class App extends React.Component {
     this.props.changeDisplayType(e.target.value)
   }
 
+  selectTab = (tabKey) => {
+    if (this.props.selectedMenu != '') {
+      this.props.selectTab({[this.props.selectedMenu]: tabKey})
+    }
+  }
+
   menuClickAction = (item, key, keyPath) => {
     let menuName = this.props.menus[item.key]
     console.log("----> click menu: ", menuName)
@@ -52,8 +58,8 @@ class App extends React.Component {
 
   render() {
     console.log("----> render")
-    const { menus, isFetchingAll, displayType, content, selectTab, selectedMenu, selectedTab } = this.props;
-    let menuKey = menus.indexOf(selectedMenu)
+    const { menus, isFetchingAll, displayType, content, selectedMenu, selectedTab } = this.props;
+    let menuKey = '' + menus.indexOf(selectedMenu)
     return (
       <Layout>
         <Header className="header">
@@ -65,10 +71,10 @@ class App extends React.Component {
           <Sider width={200} style={{ background: '#fff' }}>
             <Menu
               mode="inline"
-              defaultOpenKeys={['sub1']}
               style={{ height: '100%' }}
               onClick={this.menuClickAction}
-              defaultSelectedKeys={[menuKey]}
+              defaultOpenKeys={['sub1']}
+              defaultSelectedKeys={['0']}
               selectedKeys={[menuKey]}
             >
               <SubMenu key="sub1" title={<span><Icon type="user" />榜单数据</span>}>
@@ -88,8 +94,8 @@ class App extends React.Component {
             <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
             {
               displayType == 'Tabs'
-              ? <HotListTabs content={content} onSelect={selectTab}/>
-              : <HotListTables content={content} onSelect={selectTab}/>
+              ? <HotListTabs content={content} selectedTab={selectedTab} onSelect={this.selectTab}/>
+              : <HotListTables content={content} />
             }
             </Content>
           </Layout>
@@ -106,10 +112,11 @@ const mapStateToProps = (state) => {
     selectedMenu = menus[0]
   }
   let content = state.content[selectedMenu] || {}
+  let selectedTab = state.uistate.selectedTabs[selectedMenu]
   return {
     isFetchingAll: state.uistate.fetchAllState,
     displayType: state.uistate.displayType,
-    selectedTabs: state.uistate.selectedTabs,
+    selectedTab,
     menus,
     selectedMenu,
     content,

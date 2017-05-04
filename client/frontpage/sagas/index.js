@@ -5,6 +5,7 @@ import { delay } from 'redux-saga'
 import watchUpdateMenus from './menus.js'
 import watchGetContent from './content.js'
 import watchFetchAll from './fetchAll.js'
+import watchFetchCategory from './fetchCategory.js'
 import watchGetAlbums from './albums.js'
 
 export function* watchAndLog() {
@@ -22,5 +23,6 @@ export default function* rootSaga() {
     fork(watchGetContent),
     fork(watchFetchAll),
     fork(watchGetAlbums),
+    fork(watchFetchCategory),
   ]
 }

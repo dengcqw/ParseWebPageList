@@ -19,18 +19,22 @@ export class HotListTabs extends React.Component {
   }
 
   callback = (key) => {
-    console.log("----> click: "+key)
+    console.log("----> click Tab: "+ key)
+    this.props.onSelect(key)
   }
 
   render () {
+    const { selectedTab } = this.props
     return (
-      <Tabs onChange={this.callback} type="card" animated={false} defaultActiveKey="tabkey_0">
+      <Tabs onChange={this.callback}
+      activeKey={selectedTab}
+      type="card" animated={false} defaultActiveKey="iqiyi">
       {
         Object.values(siteIds).map((siteID, i) => {
           let siteContent = this.props.content[siteID]
           return (
-            <Tabs.TabPane tab={siteNames[siteID]} key={"tabkey_"+i}>
-              <SiteTable siteContent={siteContent} showTitle={false} siteID={siteID}/>
+            <Tabs.TabPane tab={siteNames[siteID]} key={siteID}>
+              <SiteTable siteContent={siteContent} showTitle={false} siteID={siteID} />
             </Tabs.TabPane>
           )
         })

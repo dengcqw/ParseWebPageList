@@ -1,6 +1,7 @@
 
 export const contentActions = {
-  updateContent: 'UPDATE_CONTENT' // delete with setting property undefined
+  updateContent: 'UPDATE_CONTENT', // delete with setting property undefined
+  updateCategory: 'UPDATE_CATEGORY'
 }
 
 /* content structure
@@ -24,6 +25,14 @@ export default function contentReducer(state = {}, action = {}) {
 export function updateContentAction(content) {
   return {
     type: contentActions.updateContent,
+    content
+  }
+}
+
+/* NOTE: only update today content */
+export function updateCategoryAction(content) {
+  return {
+    type: contentActions.updateCategory,
     content
   }
 }
