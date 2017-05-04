@@ -7,6 +7,7 @@ const { Column } = Table;
 const { siteNames, categoryNames } =  require('../../../server/ParseWebPage/site.id.js')
 
 const { fetchCategoryActionCreator } = require('../sagas/fetchCategory.js')
+const { getAlbumsActionCreator } = require('../sagas/albums.js')
 
 import { connect } from 'react-redux'
 
@@ -22,13 +23,29 @@ class SiteTable extends React.Component {
   static defaultProps = {
     siteContent: {},
     showTitle:true,
-    siteID:"",  /* isRequired prop */
+    siteID:"",
     date:''
   }
 
   refetchButtonClicked = (siteID, categoryID)=> {
     console.log("----> fetch category")
     this.props.dispatch(fetchCategoryActionCreator({siteID, categoryID}))
+  }
+
+  updateAlbums = () => {
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const { albums, siteContent } = nextProps
+    let emptyAlbumURLIds = Object.values(siteContent).reduce((reduced, urlIds) => {
+      urlIds = urlIds || []
+      let filtered = urlIds.filter(urlID => !albums[urlID])
+      return reduced.concat(filtered)
+    }, [])
+    console.log("----> ", emptyAlbumURLIds)
+    if (emptyAlbumURLIds.length) {
+      this.props.dispatch(getAlbumsActionCreator(emptyAlbumURLIds))
+    }
   }
 
   renderCategoryTitle(categoryID) {
@@ -56,7 +73,8 @@ class SiteTable extends React.Component {
   }
 
   renderCategory(categoryID) {
-    let hotItems = this.props.siteContent[categoryID];
+    let urlIds = this.props.siteContent[categoryID] || []
+    let hotItems = urlIds.map(urlID => (this.props.albums[urlID] || {title: 'loading'}))
     let siteID = this.props.siteID;
     return (
       <CategoryTable
@@ -96,7 +114,11 @@ class SiteTable extends React.Component {
   }
 }
 
-export default connect()(SiteTable)
+const mapStateToProps = (state, props) => ({
+  ...props,
+  albums: state.albums
+})
+export default connect(mapStateToProps)(SiteTable)
 
 /*
  * data example
@@ -154,16 +176,15 @@ class CategoryTable extends React.Component {
   }
 
   render () {
-    const {hotItems} = this.props
-    //if (hotItems.length && ! hotItems[0].key) {
-      //hotItems.forEach(function(item, i) {
-        //item.key = 'item' + i;
-      //});
-    //}
-    let maphotItems = hotItems.map((item, index) => ({'title':item, key:index}))
+    const { hotItems } = this.props
+    if (hotItems.length && ! hotItems[0].key) {
+      hotItems.forEach(function(item, i) {
+        item.key = 'item' + i;
+      });
+    }
     return (
       <Table
-      dataSource={maphotItems}
+      dataSource={hotItems}
       pagination={false}
       size='small'
       >
