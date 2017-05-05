@@ -18,6 +18,8 @@ class SiteTable extends React.Component {
   constructor (props) {
     super(props)
     this.today = new Date().toISOString().slice(0, 10)
+    /* Tabs first create when click need update albums*/
+    this.updateAlbums(this.props)
   }
 
   static defaultProps = {
@@ -32,19 +34,23 @@ class SiteTable extends React.Component {
     this.props.dispatch(fetchCategoryActionCreator({siteID, categoryID}))
   }
 
-  updateAlbums = () => {
-  }
-
-  componentWillReceiveProps (nextProps) {
-    const { albums, siteContent } = nextProps
+  updateAlbums = (props) => {
+    const { albums, siteContent } = props
     let emptyAlbumURLIds = Object.values(siteContent).reduce((reduced, urlIds) => {
       urlIds = urlIds || []
       let filtered = urlIds.filter(urlID => !albums[urlID])
       return reduced.concat(filtered)
     }, [])
-    console.log("----> ", emptyAlbumURLIds)
+    console.log("----> get ablums: ", props.siteID, emptyAlbumURLIds)
     if (emptyAlbumURLIds.length) {
       this.props.dispatch(getAlbumsActionCreator(emptyAlbumURLIds))
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    console.log("----> SiteTable", nextProps.siteID, "WillReceiveProps: selected ", nextProps.selected)
+    if (nextProps.selected) {
+      this.updateAlbums(nextProps)
     }
   }
 

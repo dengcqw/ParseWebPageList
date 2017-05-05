@@ -35,7 +35,12 @@ export class HotListTabs extends React.Component {
           let siteContent = this.props.content[siteID] || {}
           return (
             <Tabs.TabPane tab={siteNames[siteID]} key={siteID}>
-              <SiteTable siteContent={siteContent} showTitle={false} siteID={siteID} date={date} />
+              <SiteTable
+                siteContent={siteContent}
+                showTitle={false}
+                siteID={siteID}
+                date={date}
+                selected={selectedTab == siteID} />
             </Tabs.TabPane>
           )
         })
