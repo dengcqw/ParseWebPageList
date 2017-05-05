@@ -3,7 +3,7 @@ const express = require('express'),
   router = express.Router();
 
 const { parseCategory, parseAll } = require('../ParseWebPage');
-const { requestDetail } = require('./api.js')
+const { requestDetail } = require('./fetchDetail.js')
 const models = require('../models')
 const {siteIds, categoryNames} = require('../ParseWebPage/site.id.js')
 const urlConfig = require('../ParseWebPage/urlConfig.json')
@@ -22,7 +22,10 @@ const apiMap = {
   itemDetail: (req, res) => {
     requestDetail(req.query)
       .then(content => res.send(content))
-      .catch(err => res.sendStatus(503))
+      .catch(err => {
+        console.log("----> fetch detail err: ", err)
+        res.sendStatus(503)
+      })
   },
   captureInfo: (req, res) => {
     models.CaptureInfo.findAll({

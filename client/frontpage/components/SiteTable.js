@@ -9,6 +9,8 @@ const { siteNames, categoryNames } =  require('../../../server/ParseWebPage/site
 const { fetchCategoryActionCreator } = require('../sagas/fetchCategory.js')
 const { getAlbumsActionCreator } = require('../sagas/albums.js')
 
+import ItemDetailModal from './ItemDetailModal.js'
+
 import { connect } from 'react-redux'
 
 /*
@@ -45,6 +47,20 @@ class SiteTable extends React.Component {
     if (emptyAlbumURLIds.length) {
       this.props.dispatch(getAlbumsActionCreator(emptyAlbumURLIds))
     }
+  }
+
+  showDetail = (siteID, categoryID) => item => {
+    console.log("----> show detail: ", siteID, categoryID, item)
+    Modal.info({
+      title: "详细信息",
+      okText: "关闭",
+      width: "80%",
+      maskClosable: true,
+      content: (
+        <ItemDetailModal item={item} categoryID={categoryID} siteID={siteID} />
+      ),
+      onOk() {},
+    });
   }
 
   componentWillReceiveProps (nextProps) {
@@ -87,7 +103,8 @@ class SiteTable extends React.Component {
         className='category-tb'
         hotItems={hotItems || []}
         categoryID={categoryID}
-        siteID={siteID} />
+        siteID={siteID}
+        showDetail={this.showDetail(siteID, categoryID).bind(this)} />
     )
   }
 
@@ -136,53 +153,14 @@ export default connect(mapStateToProps)(SiteTable)
 
 */
 class CategoryTable extends React.Component {
-  state = {
-    visible: false,
-    titleFromDetail: ''
-  }
-
   static defaultProps = {
     hotItems: [],
     categoryID: '',
     siteID:'',
   };
 
-  showDetail = function(item) {
-    Modal.info({
-      title: "详细信息",
-      okText: "关闭",
-      width: "500px",
-      maskClosable: true,
-      content: (
-        <ItemDetailModal
-          item={item}
-          onRequsetDetail={
-            ()=>fetch(`/api/itemDetail?title=${item.title}&category=${this.props.categoryID}&site=${this.props.siteID}`)
-              .then(function(response) {
-                if (response.status >= 400) {
-                  throw new Error("Bad response from server");
-                }
-                return response.json();
-              })
-              .then((detail)=>{
-                //debugger;
-                if (detail && detail.albumDocInfo && detail.albumDocInfo.albumTitle) {
-                  console.log('item title[', item.title, '] get albumTitle:', detail.albumDocInfo.albumTitle);
-                  this.setState({titleFromDetail: detail.albumDocInfo.albumTitle});
-                } else {
-                  console.log('item title[', item.title, '] 获取失败');
-                  this.setState({titleFromDetail: "获取失败"});
-                }
-              })
-          }
-          statusText={this.state.titleFromDetail} />
-      ),
-      onOk() {},
-    });
-  }
-
   render () {
-    const { hotItems } = this.props
+    const { hotItems, showDetail } = this.props
     if (hotItems.length && ! hotItems[0].key) {
       hotItems.forEach(function(item, i) {
         item.key = 'item' + i;
@@ -203,12 +181,9 @@ class CategoryTable extends React.Component {
           title="操作"
           key="action"
           render={(item) => {
-            //console.log("----> "+"table custom Column");
-            //console.log("----> item "+JSON.stringify(item));
-            //console.log("----> record"+JSON.stringify(reocrd));
             return (
               <span>
-                <Button onClick={()=>this.showDetail(item)}>详情</Button>
+                <Button onClick={()=>showDetail(item)}>详情</Button>
               </span>
             )
           }}
