@@ -6,13 +6,23 @@ export const uiStateActions = {
   updateFetchAllState: 'UPDATE_FETCHALL_STATE', // ture or false to control loading
   updateDisplayType: 'UPDATE_DISPLAY_TYPE', // string 'Tabs' or 'Tables' to control content display
   updateSelectedTab: 'UPDATE_SELECTED_TAB', // {menuName: siteID} to record selected Site for each menu
-  updateSelectedMenu:'UPDATE_SELECTED_MENU' // [menuKey] to save selected menus
+  updateSelectedMenu:'UPDATE_SELECTED_MENU', // [menuKey] to save selected menus
+  syncDetailState: 'SYNC_DETAIL_STATE'
 }
 
 function fetchAllStateReducer(state = false, action = {}) {
   switch (action.type) {
     case uiStateActions.updateFetchAllState:
       return action.isFetching
+    default:
+      return state;
+  }
+}
+
+function syncDetailStateReducer(state = false, action = {}) {
+  switch (action.type) {
+    case uiStateActions.syncDetailState:
+      return action.isSync
     default:
       return state;
   }
@@ -47,6 +57,7 @@ function selectedMenuReducer(state = '', action = {}) {
 
 export default combineReducers({
   fetchAllState: fetchAllStateReducer,
+  syncDetailState: syncDetailStateReducer,
   displayType: displayTypeReducer,
   selectedTabs: selectedTabReducer,
   selectedMenu: selectedMenuReducer
@@ -58,6 +69,13 @@ export function updatefetchAllStateAction(isFetching) {
   return {
     type: uiStateActions.updateFetchAllState,
     isFetching
+  }
+}
+
+export function syncDetailStateAction(isSync) {
+  return {
+    type: uiStateActions.syncDetailState,
+    isSync
   }
 }
 

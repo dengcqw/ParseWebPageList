@@ -16,6 +16,7 @@ import { updateMenuActionCreator } from './sagas/menus.js'
 import { getContentActionCreator } from './sagas/content.js'
 import { getAlbumsActionCreator } from './sagas/albums.js'
 import { fetchAllActionCreator } from './sagas/fetchAll.js'
+import { syncDetailActionCreator } from './sagas/syncDetail.js'
 
 import {
   updateDisplayTypeAction,
@@ -31,6 +32,7 @@ class App extends React.Component {
     }
     this.updateMenu = this.props.updateMenu
     this.fetchHotList = this.props.fetchAll
+    this.syncDetail = () => this.props.syncDetail(this.props.selectedMenu)
     this.changeDisplayType = this.changeDisplayType.bind(this)
   }
 
@@ -58,13 +60,17 @@ class App extends React.Component {
 
   render() {
     console.log("----> render")
-    const { menus, isFetchingAll, displayType, content, selectedMenu, selectedTab } = this.props;
+    const { menus, isFetchingAll, isSync, displayType, content, selectedMenu, selectedTab } = this.props;
     let menuKey = '' + menus.indexOf(selectedMenu)
     return (
       <Layout>
         <Header className="header">
           <Button type="primary" loading={isFetchingAll} onClick={this.fetchHotList}>
             爬取榜单
+          </Button>
+          <div style={{display:'inline-block', width:'40px'}}/>
+          <Button type="primary" loading={isSync} onClick={this.syncDetail}>
+            同步全网
           </Button>
         </Header>
         <Layout>
@@ -113,6 +119,7 @@ const mapStateToProps = (state) => {
   }
   let content = state.content[selectedMenu] || {}
   let selectedTab = state.uistate.selectedTabs[selectedMenu]
+  let isSync = state.uistate.syncDetailState
   return {
     isFetchingAll: state.uistate.fetchAllState,
     displayType: state.uistate.displayType,
@@ -120,15 +127,16 @@ const mapStateToProps = (state) => {
     menus,
     selectedMenu,
     content,
+    isSync
   }
 }
 const mapDispatchToProps = (dispatch) => {
   return {
     // async actions
     fetchAll: bindActionCreators(fetchAllActionCreator, dispatch),
+    syncDetail: bindActionCreators(syncDetailActionCreator, dispatch),
     updateMenu: bindActionCreators(updateMenuActionCreator, dispatch),
     getContent: bindActionCreators(getContentActionCreator, dispatch),
-    getAlbums: bindActionCreators(getAlbumsActionCreator, dispatch),
     // sync ui state actions
     changeDisplayType: bindActionCreators(updateDisplayTypeAction, dispatch),
     selectTab: bindActionCreators(updateSelectedTabAction, dispatch),

@@ -7,6 +7,7 @@ import watchGetContent from './content.js'
 import watchFetchAll from './fetchAll.js'
 import watchFetchCategory from './fetchCategory.js'
 import watchGetAlbums from './albums.js'
+import watchSyncDetailAsync from './syncDetail.js'
 
 export function* watchAndLog() {
   while(true) {
@@ -26,5 +27,6 @@ export default function* rootSaga() {
     fork(watchFetchAll),
     fork(watchGetAlbums),
     fork(watchFetchCategory),
+    fork(watchSyncDetailAsync),
   ]
 }

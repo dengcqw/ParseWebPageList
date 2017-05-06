@@ -7,6 +7,9 @@ var path      = require("path");
 var UpdateQueue = require('./UpdateQueue.js')
 var { getSiteModelName } = require('../ParseWebPage/site.id.js')
 
+var { getHotListPromise } = require('./getHotList.js')
+var { getAlbumsPromise } = require('./getAlbums.js')
+
 var sequelize = new Sequelize('', '', '', {
   dialect: 'sqlite',
   define: { timestamps: false },
@@ -38,5 +41,7 @@ db.Sequelize = Sequelize
 db.getSiteModel = (siteId) => db[getSiteModelName(siteId)]
 db.createDateKey = () => new Date().toISOString().slice(0, 10)
 db.updateQueue = new UpdateQueue()
+db.getHotList = getHotListPromise.bind(db)
+db.getAlbums = getAlbumsPromise.bind(db)
 
 module.exports = db;
