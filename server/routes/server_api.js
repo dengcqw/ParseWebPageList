@@ -7,6 +7,8 @@ const requestDetail = require('../SyncDetail/fetchDetail.js')
 const models = require('../models')
 const {siteIds, categoryNames} = require('../ParseWebPage/site.id.js')
 const urlConfig = require('../ParseWebPage/urlConfig.json')
+const syncDetail = require('../SyncDetail')
+
 
 const apiMap = {
   fetchAll: (req, res) => {
@@ -20,7 +22,8 @@ const apiMap = {
       .catch(err => {console.log(err); res.sendStatus(503)})
   },
   itemDetail: (req, res) => {
-    requestDetail(req.query)
+    let itemInfo = {title:req.query.title, categoryID:req.query.categoryid, siteID:req.query.siteid}
+    requestDetail(itemInfo)
       .then(content => res.send(content))
       .catch(err => { console.log(err); res.sendStatus(503) })
   },
@@ -50,7 +53,9 @@ const apiMap = {
     }
   },
   syncDetail: (req, res) => {
-    setTimeout(()=>res.send('ok'), 2000)
+    syncDetail(req.query.date)
+      .then(() => res.send())
+      .catch(err => {console.log(err); res.sendStatus(503)})
   }
 }
 

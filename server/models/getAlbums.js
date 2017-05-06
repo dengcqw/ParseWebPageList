@@ -26,11 +26,10 @@ function getAlbums(models, urlIds, callback/* (result, err) */) {
         .then(album => {
           result[urlid] = album.toJSON()
           jobCount--
-          console.log("----> get albums for site", urlid)
           if (jobCount == 0) callback(result)
         }).catch(err => {
-          console.log("----> get albums error for site", urlid, err)
-          result[siteID] = {}
+          console.log("----> get albums error: ", urlid, err)
+          result[urlid] = {}
           jobCount--
           if (jobCount == 0) callback(result)
         })

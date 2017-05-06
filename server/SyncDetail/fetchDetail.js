@@ -6,8 +6,9 @@ require('isomorphic-fetch');
 const {categoryNames} = require('../ParseWebPage/site.id.js')
 const fetchDetailURL = require('./api.js')
 
-function _requestDetail(query, cb) {
-  let url = encodeURI(fetchDetailURL(query.title, query.categoryid, query.siteid))
+function _requestDetail(itemInfo, cb) {
+  console.log("----> fetch detial itemInfo: ", itemInfo)
+  let url = encodeURI(fetchDetailURL(itemInfo))
   console.log("----> fetch detial url: "+url)
   fetch(url)
   .then(function(response) {
@@ -30,8 +31,8 @@ function _requestDetail(query, cb) {
   .catch(err => cb(null, err));
 }
 
-const requestDetail = (query) => new Promise(function(res, rej) {
-  _requestDetail(query, function(detail, err) {
+const requestDetail = (itemInfo) => new Promise(function(res, rej) {
+  _requestDetail(itemInfo, function(detail, err) {
     if (err) {
       console.log("----> requset detail error: ", err)
       rej(err);
@@ -41,5 +42,5 @@ const requestDetail = (query) => new Promise(function(res, rej) {
   })
 })
 
-module.exports = {requestDetail};
+module.exports = requestDetail
 

@@ -33,9 +33,11 @@ function getHotList(models, date, callback/* (result, err) */) {
               reducedObj[categoryID] = siteModel[categoryID] // read hotlist of category
               return reducedObj
             }, {})
+          } else {
+            result[siteID] = {}
           }
-          jobCount--
           console.log("----> get content for site", siteID)
+          jobCount--
           if (jobCount == 0) callback(result)
         }).catch(err => {
           console.log("----> get content error for site", siteID, err)

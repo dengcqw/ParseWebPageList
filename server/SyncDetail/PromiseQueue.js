@@ -12,15 +12,15 @@ PromiseQueue.prototype._run = function() {
   let promiseGenerator = this.queue.shift()
   if (promiseGenerator) {
     this.running = true
-    console.log("----> start a promise job: ", promiseGenerator.name)
+    console.log("----> start a promise job: ", promiseGenerator.message)
     promiseGenerator()
       .then((result) => {
-        console.log("----> finish a promise job: ", promiseGenerator.name)
+        console.log("----> finish a promise job: ", promiseGenerator.message)
         this.running = false
         this._run()
       })
       .catch((err)=>{
-        console.log("----> fail in promise job: ", promiseGenerator.name, err)
+        console.log("----> fail in promise job: ", promiseGenerator.message, err)
         this.running = false
         this._run()
       })
