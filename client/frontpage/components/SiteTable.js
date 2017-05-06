@@ -10,6 +10,7 @@ const { fetchCategoryActionCreator } = require('../sagas/fetchCategory.js')
 const { getAlbumsActionCreator } = require('../sagas/albums.js')
 
 import ItemDetailModal from './ItemDetailModal.js'
+import Form from './Form.js'
 
 import { connect } from 'react-redux'
 
@@ -57,6 +58,7 @@ class SiteTable extends React.Component {
       width: "80%",
       maskClosable: true,
       content: (
+        //<Form/>
         <ItemDetailModal item={item} categoryID={categoryID} siteID={siteID} />
       ),
       onOk() {},
@@ -157,7 +159,7 @@ class CategoryTable extends React.Component {
     hotItems: [],
     categoryID: '',
     siteID:'',
-  };
+  }
 
   render () {
     const { hotItems, showDetail } = this.props

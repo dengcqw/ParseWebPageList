@@ -28,11 +28,12 @@ const apiMap = {
       .catch(err => { console.log(err); res.sendStatus(503) })
   },
   captureInfo: (req, res) => {
-    models.CaptureInfo.findAll({
-      order: 'date DESC'
-    }).then(infos => {
-      res.send(infos)
-    }).catch(err => {console.log(err); res.sendStatus(503)})
+    models.updateQueue.enqueue(() => {
+      return models.CaptureInfo
+        .findAll({ order: 'date DESC' })
+        .then(infos => { res.send(infos) })
+        .catch(err => {console.log(err); res.sendStatus(503)})
+    })
   },
   getHotList: (req, res) => { // send all the urlid
     models.getHotList(req.query.date)
@@ -56,6 +57,16 @@ const apiMap = {
     syncDetail(req.query.date)
       .then(() => res.send())
       .catch(err => {console.log(err); res.sendStatus(503)})
+  },
+  saveDetail: (req, res) => {
+    let urlid = req.body.urlid
+    models.updateQueue.enqueue(() => {
+      return models.Album
+        .find({where:{urlid}})
+        .then(album => album.update(req.body))
+        .then(() => res.send())
+        .catch(err => {console.log(err); res.sendStatus(503)})
+    })
   }
 }
 

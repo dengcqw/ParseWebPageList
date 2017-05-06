@@ -2,6 +2,8 @@ import React from 'react'
 
 import { Button } from 'antd';
 
+import Api from '../services'
+
 export default class ItemDetailModal extends React.Component {
   static defaultProps = {
     item: {},
@@ -9,8 +11,29 @@ export default class ItemDetailModal extends React.Component {
     siteID: '',
   }
 
+  titleRef = 'title'
+
   state = {
     detail: {},
+    editValue: {},
+    statusText: ''
+  }
+
+  _mergeDetail = (item, detail) => {
+    let albumDocInfo = detail.albumDocInfo || {}
+    return {
+      docid : item.docid || detail.doc_id,
+      imgh : item.imgh || albumDocInfo.albumHImage,
+      imgv : item.imgv || albumDocInfo.albumVImage,
+      desc : item.desc || albumDocInfo.description,
+      capturedurl : item.capturedurl,
+      urlid : item.urlid,
+      title: item.title,
+    }
+  }
+
+  handleTextChange = (ref) => (event) => {
+    this.setState({editValue: {[ref] : event.target.value}})
   }
 
   copyToClipboard = function(text) {
@@ -37,8 +60,9 @@ export default class ItemDetailModal extends React.Component {
 
   onRequsetDetail = () => {
     const {item, categoryID, siteID } = this.props
+    let title = this.state.editValue[this.titleRef] || item.title
 
-    fetch(`/api/itemDetail?title=${item.title}&categoryid=${categoryID}&siteid=${siteID}`)
+    fetch(`/api/itemDetail?title=${title}&categoryid=${categoryID}&siteid=${siteID}`)
       .then(function(response) {
         if (response.status >= 400) {
           throw new Error("Bad response from server");
@@ -50,12 +74,31 @@ export default class ItemDetailModal extends React.Component {
         console.log("----> ", detail)
         if (detail && detail.albumDocInfo && detail.albumDocInfo.albumTitle) {
           console.log('item title[', item.title, '] get albumTitle:', detail.albumDocInfo.albumTitle)
-          this.setState({detail})
+          this.setState({detail, displaySaveButton: true, statusText:'requset success'})
         } else {
           console.log('item title[', item.title, '] 获取失败');
-          this.setState({detail: null});
+          this.setState({detail: null, displaySaveButton: false, statusText:'requset fail'});
         }
       })
+  }
+
+  onSave = () => {
+    let mergeDetailItem = this._mergeDetail(this.props.item, this.state.detail)
+    let mergeEditValueItem = Object.assign({}, mergeDetailItem , this.state.editValue)
+    Api.saveDetail(mergeEditValueItem).then(() => {
+      this.setState({statusText: 'save success'})
+    }).catch(err => this.setState({statusText: 'save success'}))
+  }
+
+  renderEditText = (text, ref) => {
+    return (
+      <input
+        type="text"
+        style={{width: '400px'}}
+        value={this.state.editValue[ref] || text}
+        onChange={this.handleTextChange(ref).bind(this)}
+      />
+    )
   }
 
   copyButton = (text)=> {
@@ -64,28 +107,32 @@ export default class ItemDetailModal extends React.Component {
   requsetButton = ()=> {
     return <Button size='small' style={{marginLeft:'20px'}} onClick={this.onRequsetDetail}>requset</Button>;
   }
+  saveButton = ()=> {
+    let display = this.state.displaySaveButton ? 'inline-block' : 'none'
+    return <Button size='small' style={{marginLeft:'20px', display}} onClick={this.onSave}>save</Button>;
+  }
 
   render() {
     console.log("----> render item detail")
     const { item } = this.props
-    const { detail } = this.state
-    let albumDocInfo = detail.albumDocInfo || {}
     if (item == undefined) {
-      return null;
+      return null
     }
-    let url = item.capturedurl
-    let docid = item.docid || detail.doc_id
-    let urlid = item.urlid
-    let imgh = item.imgh || albumDocInfo.albumHImage
-    let imgv = item.imgv || albumDocInfo.albumVImage
-    let desc = item.desc || albumDocInfo.description
+    const { detail, statusText } = this.state
 
-    let statusText = detail? 'success' : 'fail'
+    let newItem = this._mergeDetail(item, detail)
+    let url = newItem.capturedurl
+    let docid = newItem.docid
+    let urlid = newItem.urlid
+    let imgh = newItem.imgh
+    let imgv = newItem.imgv
+    let desc = newItem.desc
+    let title = newItem.title
 
     return (
       <div>
         <p style={{lineHeight: '20px'}}>
-          视频：{item.title}
+          视频：{this.renderEditText(title, this.titleRef)}
         </p>
         <div style={{lineHeight: '20px'}}>
           docID：{docid} {this.copyButton(docid)}
@@ -104,7 +151,7 @@ export default class ItemDetailModal extends React.Component {
           横图： <a ref='pagelink' href={imgh} target="_blank"><img className='detail-img' src={imgh}></img></a>
         </div>
         <div style={{lineHeight: '20px'}}>
-          状态：{statusText} {this.requsetButton()}
+          状态：{statusText} {this.requsetButton()} {this.saveButton()}
         </div>
       </div>
     );

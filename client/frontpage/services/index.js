@@ -4,6 +4,7 @@ import getAlbums from './albums.js'
 import getContent from './content.js'
 import fetchAll from './fetchAll.js'
 import syncDetail from './syncDetail.js'
+import saveDetail from './saveDetail.js'
 import fetchCatetory from './fetchCategory.js'
 
 // TODO: use same response structure
@@ -14,5 +15,6 @@ export default {
   getContent,
   fetchAll,
   syncDetail,
+  saveDetail,
   fetchCatetory,
 }
