@@ -2,7 +2,6 @@
 const PromiseQueue = require('./PromiseQueue.js')
 const models = require('../models')
 const requestDetail = require('./fetchDetail.js')
-const { siteIds, categoryNames } = require('../ParseWebPage/site.id.js')
 
 const syncQueue_0 = new PromiseQueue()
 const syncQueue_1 = new PromiseQueue()

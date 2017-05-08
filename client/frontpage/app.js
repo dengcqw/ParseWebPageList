@@ -10,7 +10,7 @@ const { Header, Content, Sider } = Layout;
 
 import { HotListTabs } from './components/HotListTabs.js'
 import { HotListTables } from './components/HotListTables.js'
-const { siteIds, categoryNames } = require('../../server/ParseWebPage/site.id.js')
+import categoryNames from './categoryNames.js'
 
 import { updateMenuActionCreator } from './sagas/menus.js'
 import { getContentActionCreator } from './sagas/content.js'
@@ -93,7 +93,7 @@ class App extends React.Component {
             </Menu>
           </Sider>
           <Layout style={{ padding: '0 24px 24px 24px' }}>
-           <Radio.Group style={{margin:'20px'}} value={displayType} onChange={this.changeDisplayType}>
+            <Radio.Group style={{margin:'20px'}} value={displayType} onChange={this.changeDisplayType}>
               <Radio.Button value="Tabs">选项卡</Radio.Button>
               <Radio.Button value="Tables">表格</Radio.Button>
             </Radio.Group>

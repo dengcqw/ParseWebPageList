@@ -1,8 +1,8 @@
 
-const path = require('path');
-const CaptureQueue = require('./CaptureQueue.js');
-var urlConfig = require('./urlConfig.json');
-const captureQueue = new CaptureQueue();
+const path = require('path')
+const CaptureQueue = require('./CaptureQueue.js')
+var urlConfig = require('../sites').urlConfig
+const captureQueue = new CaptureQueue()
 
 captureQueue.outputDir = path.resolve(process.cwd(), './output');
 

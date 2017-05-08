@@ -5,8 +5,7 @@ const express = require('express'),
 const { parseCategory, parseAll } = require('../ParseWebPage');
 const requestDetail = require('../SyncDetail/fetchDetail.js')
 const models = require('../models')
-const {siteIds, categoryNames} = require('../ParseWebPage/site.id.js')
-const urlConfig = require('../ParseWebPage/urlConfig.json')
+const urlConfig = require('../sites').urlConfig
 const syncDetail = require('../SyncDetail')
 
 

@@ -2,8 +2,6 @@ import React from 'react'
 
 import SiteTable from './SiteTable.js'
 
-const { siteIds } =  require('../../../server/ParseWebPage/site.id.js')
-
 /*
  * hot table list fo all site
  */
@@ -22,8 +20,7 @@ export class HotListTables extends React.Component {
     return (
       <div>
       {
-        Object.values(siteIds).map((siteID, i) => {
-          let siteContent = content[siteID];
+        Object.entries(content).map(([siteID, siteContent]) => {
           return <SiteTable siteContent={siteContent} siteID={siteID} date={this.props.date}/>
         })
       }

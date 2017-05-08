@@ -1,0 +1,35 @@
+{
+  "iqiyi":{
+    "dianshiju": "http://top.iqiyi.com/dianshiju.html",
+    "zongyi":    "http://top.iqiyi.com/zongyi.html",
+    "dongman":   "http://top.iqiyi.com/dongman.html",
+    "dianying": "http://top.iqiyi.com/dianying.html",
+    "shaoer": "http://top.iqiyi.com/shaoer.html"
+  },
+  "qq": {
+    "dianshiju": "http://v.qq.com/x/list/tv",
+    "zongyi":    "http://v.qq.com/x/list/variety",
+    "dongman":   "http://v.qq.com/x/list/cartoon",
+    "dianying": "http://v.qq.com/x/list/movie",
+    "shaoer": "http://v.qq.com/x/list/children"
+  },
+  "youku": {
+    "dianshiju": "http://index.youku.com/rank_top_detail/?m=97&type=1",
+    "zongyi":    "http://index.youku.com/rank_top_detail/?m=85&type=1",
+    "dongman":   "http://index.youku.com/rank_top_detail/?m=100&type=1",
+    "dianying": "http://index.youku.com/rank_top_detail/?m=96&type=1"
+  },
+  "imgo": {
+    "dianshiju":"http://www.mgtv.com/top/tv/",
+    "zongyi":"http://www.mgtv.com/top/show/",
+    "dongman":"http://www.mgtv.com/top/cartoon/",
+    "dianying": "http://www.mgtv.com/top/movie/"
+  },
+  "acfun": {
+    "yingshi":"http://www.acfun.cn/rank/list/#cid=68;range=1"
+  },
+  "bilibili": {
+    "dianshiju":"http://www.bilibili.com/ranking#!/all/11/0/3/",
+    "dianying": "http://www.bilibili.com/ranking#!/all/23/0/3/"
+  }
+}

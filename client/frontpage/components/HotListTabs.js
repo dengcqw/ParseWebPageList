@@ -4,7 +4,7 @@ import { Tabs } from 'antd';
 
 import SiteTable from './SiteTable.js'
 
-const { siteIds, siteNames } =  require('../../../server/ParseWebPage/site.id.js')
+const { siteNames } = require('../siteNames.js')
 
 /*
  * show hot list as tabs
@@ -15,7 +15,7 @@ export class HotListTabs extends React.Component {
   }
 
   static defaultProps = {
-    content: {}, // json file content
+    content: {},
     date:''
   }
 
@@ -25,14 +25,13 @@ export class HotListTabs extends React.Component {
   }
 
   render () {
-    const { selectedTab, date } = this.props
+    const { selectedTab, date, content } = this.props
     return (
       <Tabs onChange={this.callback}
       activeKey={selectedTab}
       type="card" animated={false} defaultActiveKey="iqiyi">
       {
-        Object.values(siteIds).map((siteID, i) => {
-          let siteContent = this.props.content[siteID] || {}
+        Object.entries(content).map(([siteID, siteContent]) => {
           return (
             <Tabs.TabPane tab={siteNames[siteID]} key={siteID}>
               <SiteTable

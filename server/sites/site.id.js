@@ -1,38 +1,17 @@
 
 const siteIds = {
-  iqiyi:    "iqiyi",
-  youku:    "youku",
-  qq:       "qq",
-  sohu:     "sohu",
-  mgtv:     "imgo",
-  letv:     "letv",
-  pptv:     "pptv",
-  bilibili: "bilibili",
-  acfun:    "acfun",
+  iqiyi    : "iqiyi",
+  youku    : "youku",
+  qq       : "qq",
+  sohu     : "sohu",
+  mgtv     : "imgo",
+  letv     : "letv",
+  pptv     : "pptv",
+  bilibili : "bilibili",
+  acfun    : "acfun",
 }
 
-
-const siteNames = (function() {
-  var siteNames = {};
-  siteNames[siteIds.iqiyi] = "爱奇艺";
-  siteNames[siteIds.youku] = "优酷";
-  siteNames[siteIds.qq] = "腾讯";
-  siteNames[siteIds.sohu] = "搜狐";
-  siteNames[siteIds.mgtv] = "芒果TV";
-  siteNames[siteIds.letv] = "乐视";
-  siteNames[siteIds.pptv] = "PPTV";
-  siteNames[siteIds.bilibili] = "B站";
-  siteNames[siteIds.acfun] = "A站";
-  return siteNames;
-})()
-
-const categoryNames = {
-  "dianshiju":"电视剧",
-  "zongyi":"综艺",
-  "dongman":"动漫"
-}
-
-function getIdentifier(href) {
+function getSiteID(href) {
   if(href.search(".iqiyi.com") >= 0) {
     return siteIds.iqiyi;
   } else if(href.search(".acfun.") >= 0) {
@@ -60,12 +39,9 @@ function getSiteModelName(siteID) {
   return siteID+'Hotlist';
 }
 
-
 module.exports = {
   siteIds,
-  categoryNames,
-  siteNames,
-  getIdentifier,
+  getSiteID,
   getSiteModelName
 }
 

@@ -4,7 +4,8 @@ import React from 'react'
 import { Table, Icon, Modal, Button } from 'antd';
 const { Column } = Table;
 
-const { siteNames, categoryNames } =  require('../../../server/ParseWebPage/site.id.js')
+import categoryNames from '../categoryNames.js'
+const { siteNames } = require('../siteNames.js')
 
 const { fetchCategoryActionCreator } = require('../sagas/fetchCategory.js')
 const { getAlbumsActionCreator } = require('../sagas/albums.js')
@@ -120,7 +121,8 @@ class SiteTable extends React.Component {
         : null
       }
       {
-        ["dianshiju", "zongyi", "dongman"].map((categoryID) => {
+        Object.keys(siteContent).length
+        ? Object.keys(siteContent).map((categoryID) => {
           return (
             <div style={{float:"left", marginRight:'40px'}}>
               {
@@ -131,7 +133,7 @@ class SiteTable extends React.Component {
               }
             </div>
           )
-        })
+        }) : <p>数据表为空</p>
       }
         <div className='clear'></div>
       </div>

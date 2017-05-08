@@ -112,6 +112,10 @@ export default class ItemDetailModal extends React.Component {
     return <Button size='small' style={{marginLeft:'20px', display}} onClick={this.onSave}>save</Button>;
   }
 
+  onImageLoadErr = (err) => {
+    console.log("----> msg", err)
+  }
+
   render() {
     console.log("----> render item detail")
     const { item } = this.props
@@ -147,8 +151,8 @@ export default class ItemDetailModal extends React.Component {
           描述：{desc}
         </p>
         <div style={{lineHeight: '80px'}}>
-          竖图： <a ref='pagelink' href={imgv} target="_blank"><img className='detail-img' src={imgv}></img></a>
-          横图： <a ref='pagelink' href={imgh} target="_blank"><img className='detail-img' src={imgh}></img></a>
+          竖图： <a ref='pagelink' href={imgv} target="_blank"><img className='detail-img' src={imgv} onError={this.onImageLoadErr} ></img></a>
+          横图： <a ref='pagelink' href={imgh} target="_blank"><img className='detail-img' src={imgh} onError={this.onImageLoadErr}></img></a>
         </div>
         <div style={{lineHeight: '20px'}}>
           状态：{statusText} {this.requsetButton()} {this.saveButton()}

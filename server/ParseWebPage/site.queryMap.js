@@ -1,5 +1,5 @@
 
-const siteIds = require('./site.id.js').siteIds;
+const siteIds = require('../sites').siteIds;
 
 // TODO: move to config file
 const maxQueryCount = 30;

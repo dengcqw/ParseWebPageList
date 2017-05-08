@@ -3,7 +3,6 @@
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
-const {categoryNames} = require('../ParseWebPage/site.id.js')
 const fetchDetailURL = require('./api.js')
 
 function _requestDetail(itemInfo, cb) {

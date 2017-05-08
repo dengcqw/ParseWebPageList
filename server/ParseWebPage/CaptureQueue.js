@@ -1,6 +1,5 @@
-//var urlConfig = require('./urlConfig.json');
-var urlConfig = require('./urlConfig-test.json');
-var siteQueryMap = require('./site.queryMap.js');
+var siteQueryMap = require('./site.queryMap.js')
+var urlConfig = require('../sites').urlConfig
 
 var _ = require('lodash');
 var fs = require('fs');

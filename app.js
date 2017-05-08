@@ -43,6 +43,10 @@ if (isDev) {
         }
     }));
     app.use(webpackHotMiddleware(compiler));
+    app.get('/test/:id', function (req, res) {
+      console.log("----> test html: ", req.params.id)
+      res.render(req.params.id)
+    });
 
     require('./server/routes')(app);
     app.listen(port, function () {
@@ -69,4 +73,3 @@ if (isDev) {
         console.log('App (production) is now running on port 3000!');
     });
 }
-

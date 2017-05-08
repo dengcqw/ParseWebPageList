@@ -1,14 +1,14 @@
 
 "use strict";
 
-var { siteIds, getSiteModelName, categoryNames } = require('../ParseWebPage/site.id.js')
+var { getSiteModelName, urlConfig } = require('../sites')
 
 /*
  * create a model for each site to store hot list
  * each list is joined by semicolon
  */
 
-var categoryColumnDef = (DataTypes) => Object.keys(categoryNames).map(categoryID => {
+var categoryColumnDef = (DataTypes, categoryIds) => categoryIds.map(categoryID => {
   return {
     [categoryID] : {
       type: DataTypes.TEXT,
@@ -39,12 +39,15 @@ var dateColumnDef = (DataTypes) => {
   }
 }
 
-var columnDef = (DataTypes) => Object.assign({}, dateColumnDef(DataTypes), ...categoryColumnDef(DataTypes))
+var columnDef = (DataTypes, categoryIds) => (
+  Object.assign({}, dateColumnDef(DataTypes), ...categoryColumnDef(DataTypes, categoryIds))
+)
 
 module.exports = function(sequelize, DataTypes) {
   var siteModels = []
-  Object.values(siteIds).forEach((siteId, index) => {
-    let model = sequelize.define(getSiteModelName(siteId), columnDef(DataTypes))
+  Object.entries(urlConfig).forEach(([siteID, siteContent]) => {
+    let categoryIds = Object.keys(siteContent)
+    let model = sequelize.define(getSiteModelName(siteID), columnDef(DataTypes, categoryIds))
     siteModels.push(model)
   })
 

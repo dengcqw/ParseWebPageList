@@ -5,7 +5,7 @@ var Sequelize = require("sequelize");
 var path      = require("path");
 
 var UpdateQueue = require('./UpdateQueue.js')
-var { getSiteModelName } = require('../ParseWebPage/site.id.js')
+var { getSiteModelName } = require('../sites')
 
 var { getHotListPromise } = require('./getHotList.js')
 var { getAlbumsPromise } = require('./getAlbums.js')

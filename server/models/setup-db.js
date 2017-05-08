@@ -1,7 +1,7 @@
 
 
 var models = require('./index.js')
-var { siteIds, getSiteModelName } = require('../ParseWebPage/site.id.js')
+var { siteIds, getSiteModelName } = require('../sites')
 
 var test_dates = [
   '20170507',

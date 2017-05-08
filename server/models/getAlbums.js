@@ -1,6 +1,4 @@
 
-const {siteIds, categoryNames} = require('../ParseWebPage/site.id.js')
-
 // need bind this to index db obj
 function getAlbumsPromise(urlIds) {
   return new Promise((res, rej) => {

@@ -1,5 +1,6 @@
 
-const {siteIds, categoryNames} = require('../ParseWebPage/site.id.js')
+const { urlConfig } = require('../sites')
+const siteIds = Object.keys(urlConfig)
 
 
 // need bind this to index db obj
@@ -20,16 +21,16 @@ function getHotList(models, date, callback/* (result, err) */) {
     return
   }
 
-  let jobCount = Object.values(siteIds).length
+  let jobCount = siteIds.length
   let result = {}
 
-  Object.values(siteIds).forEach(siteID => {
+  siteIds.forEach(siteID => {
     models.updateQueue.enqueue(() => { // update db promise queue
       return models.getSiteModel(siteID)
         .find({where:{date}})
         .then(siteModel => { // site model contain hotlist urlID
           if (siteModel) {
-            result[siteID] = Object.keys(categoryNames).reduce((reducedObj, categoryID) => {
+            result[siteID] = Object.keys(urlConfig[siteID]).reduce((reducedObj, categoryID) => {
               reducedObj[categoryID] = siteModel[categoryID] // read hotlist of category
               return reducedObj
             }, {})
