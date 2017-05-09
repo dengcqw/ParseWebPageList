@@ -17,6 +17,8 @@ import { getContentActionCreator } from './sagas/content.js'
 import { getAlbumsActionCreator } from './sagas/albums.js'
 import { fetchAllActionCreator } from './sagas/fetchAll.js'
 import { syncDetailActionCreator } from './sagas/syncDetail.js'
+import { uploadJsonActionCreator } from './sagas/uploadJson.js'
+import { downloadJsonActionCreator } from './sagas/downloadJson.js'
 
 import {
   updateDisplayTypeAction,
@@ -32,6 +34,8 @@ class App extends React.Component {
     }
     this.updateMenu = this.props.updateMenu
     this.fetchHotList = this.props.fetchAll
+    this.uploadJson = this.props.uploadJson
+    this.downloadJson = this.props.downloadJson
     this.syncDetail = () => this.props.syncDetail(this.props.selectedMenu)
     this.changeDisplayType = this.changeDisplayType.bind(this)
   }
@@ -60,8 +64,19 @@ class App extends React.Component {
 
   render() {
     console.log("----> render")
-    const { menus, isFetchingAll, isSync, displayType, content, selectedMenu, selectedTab } = this.props;
+    const {
+      menus,
+      isFetchingAll,
+      isSync,
+      displayType,
+      content,
+      selectedMenu,
+      selectedTab,
+      isDownloadJson,
+      isUploadJson
+    } = this.props
     let menuKey = '' + menus.indexOf(selectedMenu)
+
     return (
       <Layout>
         <Header className="header">
@@ -71,6 +86,14 @@ class App extends React.Component {
           <div style={{display:'inline-block', width:'40px'}}/>
           <Button type="primary" loading={isSync} onClick={this.syncDetail}>
             同步全网
+          </Button>
+          <div style={{display:'inline-block', width:'40px'}}/>
+          <Button type="primary" loading={isDownloadJson} onClick={this.downloadJson}>
+            下载数据
+          </Button>
+          <div style={{display:'inline-block', width:'40px'}}/>
+          <Button type="primary" loading={isUploadJson} onClick={this.uploadJson}>
+            上传数据
           </Button>
         </Header>
         <Layout>
@@ -123,6 +146,8 @@ const mapStateToProps = (state) => {
   return {
     isFetchingAll: state.uistate.fetchAllState,
     displayType: state.uistate.displayType,
+    isDownloadJson: state.uistate.downloadJsonState,
+    isUploadJson: state.uistate.uploadJsonState,
     selectedTab,
     menus,
     selectedMenu,
@@ -135,6 +160,8 @@ const mapDispatchToProps = (dispatch) => {
     // async actions
     fetchAll: bindActionCreators(fetchAllActionCreator, dispatch),
     syncDetail: bindActionCreators(syncDetailActionCreator, dispatch),
+    uploadJson: bindActionCreators(uploadJsonActionCreator, dispatch),
+    downloadJson: bindActionCreators(downloadJsonActionCreator, dispatch),
     updateMenu: bindActionCreators(updateMenuActionCreator, dispatch),
     getContent: bindActionCreators(getContentActionCreator, dispatch),
     // sync ui state actions

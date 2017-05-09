@@ -1,5 +1,5 @@
 
-import { combineReducers } from 'redux'
+//import { combineReducers } from 'redux'
 
 // action types
 export const uiStateActions = {
@@ -7,61 +7,46 @@ export const uiStateActions = {
   updateDisplayType: 'UPDATE_DISPLAY_TYPE', // string 'Tabs' or 'Tables' to control content display
   updateSelectedTab: 'UPDATE_SELECTED_TAB', // {menuName: siteID} to record selected Site for each menu
   updateSelectedMenu:'UPDATE_SELECTED_MENU', // [menuKey] to save selected menus
-  syncDetailState: 'SYNC_DETAIL_STATE'
+  syncDetailState: 'SYNC_DETAIL_STATE',
+  uploadJsonState: 'UPLOAD_JSON_STATE',
+  downloadJsonState: 'DOWNLOAD_JSON_STATE'
 }
 
-function fetchAllStateReducer(state = false, action = {}) {
+const initialState = {
+  fetchAllState: false,
+  displayType: 'Tabs',
+  selectedTabs: {},
+  selectedMenu: '',
+  syncDetailState: false,
+  uploadJsonState: false,
+  downloadJsonState: false,
+}
+
+// FIXED: merge uiState Reducers into one
+export default function uiStateReducer(state = initialState, action = {}) {
   switch (action.type) {
     case uiStateActions.updateFetchAllState:
-      return action.isFetching
-    default:
-      return state;
-  }
-}
-
-function syncDetailStateReducer(state = false, action = {}) {
-  switch (action.type) {
-    case uiStateActions.syncDetailState:
-      return action.isSync
-    default:
-      return state;
-  }
-}
-
-function displayTypeReducer(state = 'Tabs', action = {}) {
-  switch (action.type) {
+      return Object.assign({}, state, {fetchAllState:action.isFetching})
     case uiStateActions.updateDisplayType:
-      return action.displayType
-    default:
-      return state
-  }
-}
-
-function selectedTabReducer(state = {}, action = {}) {
-  switch (action.type) {
+      return Object.assign({}, state, {displayType:action.displayType})
     case uiStateActions.updateSelectedTab:
-      return Object.assign({}, state, action.selectedTab)
-    default:
-      return state
-  }
-}
-
-function selectedMenuReducer(state = '', action = {}) {
-  switch (action.type) {
+      let selectedTabs = Object.assign({}, state.selectedTabs, action.selectedTab)
+      return Object.assign({}, state, {selectedTabs})
     case uiStateActions.updateSelectedMenu:
-      return action.selectedMenu
+      return Object.assign({}, state, {selectedMenu:action.selectedMenu})
+    case uiStateActions.syncDetailState:
+      return Object.assign({}, state, {syncDetailState:action.isSync})
+      return action.isSync
+    case uiStateActions.uploadJsonState:
+      return Object.assign({}, state, {uploadJsonState:action.isUploadJson})
+      return action.isUpload
+    case uiStateActions.downloadJsonState:
+      return Object.assign({}, state, {downloadJsonState:action.isDownloadJson})
+      return action.isUpload
     default:
       return state
   }
 }
-
-export default combineReducers({
-  fetchAllState: fetchAllStateReducer,
-  syncDetailState: syncDetailStateReducer,
-  displayType: displayTypeReducer,
-  selectedTabs: selectedTabReducer,
-  selectedMenu: selectedMenuReducer
-})
 
 // action creator
 
@@ -97,6 +82,20 @@ export function updateSelectedMenuAction(selectedMenu) {
   return {
     type: uiStateActions.updateSelectedMenu,
     selectedMenu
+  }
+}
+
+export function uploadJsonStateAction(isUploadJson) {
+  return {
+    type: uiStateActions.uploadJsonState,
+    isUploadJson
+  }
+}
+
+export function downloadJsonStateAction(isDownloadJson) {
+  return {
+    type: uiStateActions.downloadJsonState,
+    isDownloadJson
   }
 }
 

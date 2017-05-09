@@ -8,7 +8,6 @@ const models = require('../models')
 const urlConfig = require('../sites').urlConfig
 const syncDetail = require('../SyncDetail')
 
-
 const apiMap = {
   fetchAll: (req, res) => {
     parseAll()
@@ -56,6 +55,30 @@ const apiMap = {
     syncDetail(req.query.date)
       .then(() => res.send())
       .catch(err => {console.log(err); res.sendStatus(503)})
+  },
+  uploadJson: (req, res) => {
+    setTimeout(()=> {
+      res.send()
+    }, 2000)
+    //syncDetail(req.query.date)
+      //.then(() => res.send())
+      //.catch(err => {console.log(err); res.sendStatus(503)})
+  },
+  downloadJson: (req, res) => {
+    console.log(`Current directory: ${process.cwd()}`)
+    res.send('/reset.css')
+
+    // Below send file content
+    //res.sendFile(process.cwd()+'/README.md', options, function (err) {
+      //if (err) {
+        //next(err);
+      //}
+    //});
+    //res.download(process.cwd()+'/README.md', 'reset.css', function(err){
+      //if (err) {
+        //console.log("----> msg", err)
+      //}
+    //});
   },
   saveDetail: (req, res) => {
     let urlid = req.body.urlid
