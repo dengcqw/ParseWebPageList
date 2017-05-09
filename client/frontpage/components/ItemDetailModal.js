@@ -108,6 +108,7 @@ export default class ItemDetailModal extends React.Component {
     return <Button size='small' style={{marginLeft:'20px'}} onClick={this.onRequsetDetail}>requset</Button>;
   }
   saveButton = ()=> {
+    return null
     let display = this.state.displaySaveButton ? 'inline-block' : 'none'
     return <Button size='small' style={{marginLeft:'20px', display}} onClick={this.onSave}>save</Button>;
   }
@@ -124,7 +125,7 @@ export default class ItemDetailModal extends React.Component {
     }
     const { detail, statusText } = this.state
 
-    let newItem = this._mergeDetail(item, detail)
+    let newItem = Object.keys(detail).length > 0 ? this._mergeDetail(item, detail) : item
     let url = newItem.capturedurl
     let docid = newItem.docid
     let urlid = newItem.urlid
@@ -132,6 +133,8 @@ export default class ItemDetailModal extends React.Component {
     let imgv = newItem.imgv
     let desc = newItem.desc
     let title = newItem.title
+    let episode = newItem.episode
+    let playCount = newItem.playcount
 
     return (
       <div>
@@ -149,6 +152,12 @@ export default class ItemDetailModal extends React.Component {
         </p>
         <p style={{lineHeight: '20px'}}>
           描述：{desc}
+        </p>
+        <p style={{lineHeight: '20px'}}>
+          更新：{episode}
+        </p>
+        <p style={{lineHeight: '20px'}}>
+          播放量：{playCount}
         </p>
         <div style={{lineHeight: '80px'}}>
           竖图： <a ref='pagelink' href={imgv} target="_blank"><img className='detail-img' src={imgv} onError={this.onImageLoadErr} ></img></a>

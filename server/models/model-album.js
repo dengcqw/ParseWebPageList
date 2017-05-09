@@ -16,7 +16,9 @@ module.exports = function(sequelize, DataTypes) {
     capturedurl:DataTypes.STRING,
     desc:DataTypes.TEXT,
     imgv:DataTypes.STRING,
-    imgh:DataTypes.STRING
+    imgh:DataTypes.STRING,
+    playcount:DataTypes.CHAR(10),
+    episode:DataTypes.CHAR(25),
   }, {
     timestamps: true, // 增加updatedAt, createdAt
     createdAt: false,

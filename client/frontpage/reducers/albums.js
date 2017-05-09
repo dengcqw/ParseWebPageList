@@ -12,6 +12,9 @@ export default function albumsReducer(state = initialState, action = {}) {
     case albumsActions.addAlbum:
       return Object.assign({}, state, action.albums)
     case albumsActions.deleteAlbum:
+      if (!action.urlIds) {
+        return initialState
+      }
       let mergeState = action.urlIds.reduce((reduced, urlID) => {
         reduced[urlID] = undefined // set deleted item to undefined
         return reduced
@@ -29,6 +32,7 @@ export function addAlbumsAction(albums) {
   }
 }
 
+// urlIds undefied will delete all
 export function deleteAlbumsAction(urlIds) {
   return {
     type: albumsActions.deleteAlbum,

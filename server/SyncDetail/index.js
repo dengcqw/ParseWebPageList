@@ -2,7 +2,7 @@
 const PromiseQueue = require('./PromiseQueue.js')
 const models = require('../models')
 const requestDetail = require('./fetchDetail.js')
-cosnt siteIds = require('../sites').siteIds
+const siteIds = require('../sites').siteIds
 
 const syncQueue_0 = new PromiseQueue()
 const syncQueue_1 = new PromiseQueue()
@@ -47,11 +47,11 @@ function getAlbumsPromise(urlID) {
 function syncItemDetail(urlIdInfo) {
   return getAlbumsPromise(urlIdInfo.urlID) // use urlID get album detail
     .then(album => {
-      if (!album || album.docid) {
-        console.log("----> album has docid: ", album.docid)
-        return null
-      }
-      else { // if no docid then make a requset for detail
+      //if (!album || album.docid) {
+        //console.log("----> album has docid: ", album.docid)
+        //return null
+      //}
+      //else { // if no docid then make a requset for detail
         let title = album.title
         // TODO: use api to fetch detail
         if (urlIdInfo.siteID == siteIds.iqiyi && urlIdInfo.categoryID == 'zongyi') {
@@ -66,10 +66,34 @@ function syncItemDetail(urlIdInfo) {
           album.imgv = albumDocInfo.albumVImage
           album.desc = albumDocInfo.description
           album.docid = detail.doc_id
+          try {
+            let episode = ''
+            let update = albumDocInfo.video_lib_meta.filmtv_update_strategy
+            if (update.search(/^\d{8}$/g) == 0) { // ag. 20170505
+              //filmtv_update_strategy : "20170409"
+              //season : 3
+              update = update.substr(4)
+              update = update.substr(0,2) + '-' + update.substr(2) + '期'
+              episode = update
+            } else if (update.search(/^\d{1,4}$/g) == 0 && urlIdInfo.categoryID != 'dianying') {
+              let totalVideoCount = albumDocInfo.video_lib_meta.total_video_count
+              if (totalVideoCount == '0') {
+                episode = `更新至${update}集`
+              } else {
+                episode = `更新至${update}集/${totalVideoCount}集全`
+              }
+            } else {
+              episode = update
+            }
+            album.episode = episode
+          } catch(e) {
+            console.log("----> format video update info error", err)
+          }
+
           console.log("----> will save album", album.title)
           return album.save()
         })
-      }
+      //}
     })
 }
 

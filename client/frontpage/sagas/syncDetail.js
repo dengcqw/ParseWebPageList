@@ -3,12 +3,14 @@ import { put, takeLatest } from 'redux-saga/effects'
 
 import {syncDetailStateAction} from '../reducers/uistate.js'
 import {getContentActionCreator} from './content.js'
+import {deleteAlbumsAction} from './albums.js'
 import Api from '../services'
 
 function* syncDetailAsync(action) {
   yield put(syncDetailStateAction(true))
   yield Api.syncDetail(action.date)
   yield put(syncDetailStateAction(false))
+  yield put(deleteAlbumsAction(undefined))
 }
 
 export default function* watchSyncDetailAsync() {
