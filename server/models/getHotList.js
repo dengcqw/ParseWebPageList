@@ -29,14 +29,10 @@ function getHotList(models, date, callback/* (result, err) */) {
       return models.getSiteModel(siteID)
         .find({where:{date}})
         .then(siteModel => { // site model contain hotlist urlID
-          if (siteModel) {
-            result[siteID] = Object.keys(urlConfig[siteID]).reduce((reducedObj, categoryID) => {
-              reducedObj[categoryID] = siteModel[categoryID] // read hotlist of category
-              return reducedObj
-            }, {})
-          } else {
-            result[siteID] = {}
-          }
+          result[siteID] = Object.keys(urlConfig[siteID]).reduce((reducedObj, categoryID) => {
+            reducedObj[categoryID] = siteModel ? (siteModel[categoryID] || []) : [] // read hotlist of category
+            return reducedObj
+          }, {})
           console.log("----> get content for site", siteID)
           jobCount--
           if (jobCount == 0) callback(result)

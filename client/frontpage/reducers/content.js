@@ -29,14 +29,14 @@ export default function contentReducer(state = {}, action = {}) {
         let content = action.content
         let siteID = content.siteID
         let categoryID = content.categoryID
-        let urlIds = content.result.hotItems.map(item => item.urlID)
+        let urlIds = content.urlIds
         if (siteID && categoryID) {
           if (!todayState[siteID]) {
             todayState[siteID] = {}
           } else {
             todayState[siteID] = Object.assign({}, todayState[siteID]) /* clone it to trigger render */
           }
-          todayState[siteID][categoryID] = urlIds
+          todayState[siteID][categoryID] = urlIds || []
         }
       } catch(e) {
         console.log("----> read update category content error: ", e)

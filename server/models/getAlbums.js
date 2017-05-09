@@ -19,10 +19,16 @@ function getAlbums(models, urlIds, callback/* (result, err) */) {
   let jobCount = urlIds.length
   let result = {}
   urlIds.forEach(urlid => {
+    if (!urlid) return
     models.updateQueue.enqueue(() => {
       return models.Album.find({where:{urlid}})
         .then(album => {
-          result[urlid] = album.toJSON()
+          if (album) {
+            result[urlid] = album.toJSON()
+          } else {
+            result[urlid] = {}
+            console.log("----> get albums error, album not exist:", urlid)
+          }
           jobCount--
           if (jobCount == 0) callback(result)
         }).catch(err => {

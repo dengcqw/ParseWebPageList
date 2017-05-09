@@ -8,21 +8,7 @@ var urlToUrlID = require('./urlToUrlID.js');
 
 var models = require('../models')
 
-const phantom = require('phantom');
-
-const loadWebPage = async function(pageURL) {
-  const instance = await phantom.create();
-  const page = await instance.createPage();
-
-  const status = await page.open(pageURL);
-  //console.log(status);
-
-  const content = await page.property('content');
-
-  await instance.exit();
-
-  return content;
-}
+const loadWebPage = require('./loadWebpage.js')
 
 /*
  * 9个site，各3个category
@@ -35,34 +21,35 @@ const captureList = ({siteID, categoryID, url})=> () => {
 
   let queryFn = siteQueryMap[siteID];
   if (queryFn == undefined) {
-    reject(new Error('fetch error: ', siteID, url));
+    throw new Error('query fn undefined: ', siteID)
   }
 
+  // TODO: timeout trigger but promise not cancel, so log will print later
   return loadWebPage(url)
     .then(html=>queryFn(cheerio.load(html)))
-    .then(hotItems=>{
+    .then(hotItems=>{ // hotItmes keep properties same wtih model definition
       console.log("fetched: ", siteID, categoryID, url, hotItems.length);
-      hotItems = hotItems || []
+      // 如果是bilibili不删除井号后的数据
+      let partStrs = (siteID == 'bilibili')?['?']:['?','#']
+      hotItems.forEach(function(item) {
+        console.log("----> make urlid: ", item)
+        item.urlid = urlToUrlID(item.capturedurl, partStrs)
+      })
 
-      // 如果是bilibili不删除警号后的数据
-      let partStrs = (siteID == 'bilibili')?['?']:['?','#'];
-      hotItems = hotItems.map(function(item) {
-        return Object.assign({}, item, {urlID: urlToUrlID(item.url, partStrs)});
-      });
-
-      var elapsedTime = Date.now() - startTime;
+      var elapsedTime = Date.now() - startTime
       return {siteID, categoryID, result: {hotItems, elapsedTime, url}}; // <-- category data object
     })
 }
 
 const promiseRetry = (getPromise, retryCount, interval) =>  new Promise(function(resolve, reject) {
   let timeout = (ms) => new Promise((resolve, reject) => {
-    ms = ms || 1000 * 60 * 2;// 120s
+    ms = ms || 1000 * 20
     setTimeout(reject, ms, new Error(`fetch timeout ${ms} ms`))
   })
   let retryWrapper = () => {
     Promise.race([timeout(interval), getPromise()])
       .then(function(hotList) {
+        console.log("----> capture race promise get list")
         resolve(hotList)
       })
       .catch(err => {
@@ -70,6 +57,7 @@ const promiseRetry = (getPromise, retryCount, interval) =>  new Promise(function
         if (retryCount == 0) {
           reject(err)
         } else {
+          console.log("----> capture race promise error", err)
           retryWrapper()
         }
       })
@@ -104,8 +92,8 @@ CaptureQueue.prototype._run = function() {
   if (job) {
     this.running = true
     console.log("----> start capture job: ", JSON.stringify(job.listInfo))
-    console.log("----> remain capture jobs: ", this.queue.length)
-    promiseRetry(captureList(job.listInfo), 3, 5000)
+    //console.log("----> remain capture jobs: ", this.queue.length)
+    promiseRetry(captureList(job.listInfo), 5, job.timeout)
       .then((hotList)=>{
         console.log("----> get hot list: ", job.listInfo.siteID, job.listInfo.categoryID)
         this.saveToFile(job.listInfo, hotList)
@@ -129,38 +117,32 @@ CaptureQueue.prototype._run = function() {
 }
 
 CaptureQueue.prototype.updateDatabase = function(listInfo, hotList) {
-  var urlIds = items => items.map((item)=>item.urlID)
+  var urlIds = items => items.map(item => item.urlid)
 
-  var updateObj = {[hotList.categoryID] :  urlIds(hotList.result.hotItems)}
+  var updateObj = {[hotList.categoryID] : urlIds(hotList.result.hotItems)}
   var date = models.createDateKey() // like 2017-04-30
 
   console.log("----> enqueue update db: ", hotList.siteID, hotList.categoryID, date)
-  models.updateQueue.enqueue(() => {
+  models.updateQueue.enqueue(() => { // update or create site model with urlIds
     return (
       models.getSiteModel(listInfo.siteID)
-      .findOrCreate({where: {date}, defaults: updateObj})
+      .findOrCreate({where: {date}})
       .spread(function(siteModel, created) {
         console.log("----> update siteModel database created: ", created)
-        if (created == false) return siteModel.update(updateObj)
-        console.log(siteModel.get({plain: true}))
+        console.log("----> update siteModel urlIds count: ", hotList.siteID, hotList.categoryID, urlIds.length)
+        return siteModel.update(updateObj)
       })
     )
   })
-  hotList.result.hotItems.forEach(item => {
-    let urlid = item.urlID
-    let updateObj = {capturedurl: item.url, title: item.title}
-    let query = {
-      where: {urlid},
-      defaults: updateObj
-    }
+  hotList.result.hotItems.forEach(item => { // update or create albums model with hot list
+    let urlid = item.urlid
+    let query = {where: {urlid}}
     models.updateQueue.enqueue(() => {
       return (
         models.Album.findOrCreate(query)
         .spread(function(album, created) {
           console.log("----> update album database created: ", created)
-          // NOTE: this data need not updated again
-          // if (created == false) return album.update(updateObj)
-          console.log(album.get({plain: true}))
+          return album.update(item)
         })
       )
     })
@@ -180,7 +162,8 @@ CaptureQueue.prototype.saveToFile = function(listInfo, hotList) {
 }
 
 CaptureQueue.prototype.captureList = function(listInfo, callback) {
-  this.queue.push({listInfo, callback})
+  let timeout = listInfo.siteID == 'acfun' ? 60000 : 30000
+  this.queue.push({listInfo, callback, timeout})
   this._run()
 }
 
@@ -193,11 +176,12 @@ CaptureQueue.prototype.captureAll = function(callback) {
   let jobs = getAllListInfo().map(listInfo => {
     return {
       listInfo: listInfo,
+      timeout: (listInfo.siteID == 'acfun' ? 60000 : 30000),
       callback: (list, err) => {
         if (list) {
           let siteID = list.siteID;
           if (!allList[siteID]) allList[siteID] = {}
-          allList[siteID][list.categoryID] = Object.assign({}, list.result.hotItems.map(item=>item.urlID))
+          allList[siteID][list.categoryID] = Object.assign({}, list.result.hotItems.map(item=>item.urlid))
         }
 
         listCount--;

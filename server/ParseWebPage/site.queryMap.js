@@ -11,22 +11,19 @@ const queryMap = (function () {
     return parseTitleAndURL(alist, $);
   };
   queryMap[siteIds.acfun] =    function($) {
-    var alist = $('.title');
-    return parseTitleAndURL(alist, $);
+    return parseAcfun($);
   };
   queryMap[siteIds.bilibili] = function($) {
-    var alist = $('.title').parent();
-    return parseTitleAndURL(alist, $);
+    return parseBilibili($);
   };
-  queryMap[siteIds.mgtv] =     function($) {
+  queryMap[siteIds.imgo] =     function($) {
     var alist = $('.m-list-item>.info-1').find('span.title'); // title element, parent is a element
 
     var items = [];
     alist.each(function(i, elem) {
       var item = {};
-      item.index = i + 1;
       item.title = $(this).text();
-      item.url = $(this).parent().attr('href');
+      item.capturedurl = $(this).parent().attr('href');
       items.push(item);
       if (i+1>=maxQueryCount) return false;
     });
@@ -69,15 +66,68 @@ function parseTitleAndURL(queryResult, $) {
   var items = [];
   alist.each(function(i, elem) {
     var item = {};
-    item.index = i + 1;
     item.title = $(this).text();
-    item.url = $(this).attr('href');
+    item.capturedurl = $(this).attr('href');
     items.push(item);
     if (i+1>=maxQueryCount) return false;
   });
-  return new Promise(function(resolve) {
-    resolve(items);
-  });
+  return items
+}
+
+function parseAcfun($) {
+  var items = []
+  $('div.mainer>div.item').each(function(i, elem) {
+    let url = $(this).find('a.title').attr('href')
+    let title = $(this).find('a.title').text()
+    let image = $(this).find('img.preview').attr('src')
+    let playCount = $(this).find('span.pts').eq(0).text()
+    let desc = $(this).find('.desc').text()
+
+    var item = {}
+    item.title = title
+    if (!url.startsWith('http')) {
+      url = "http://www.acfun.cn" + url
+    }
+    item.capturedurl = url
+    if (image.startsWith('//')) {
+      image = 'http:'+image
+    }
+    item.imgh = image
+    item.playcount = playCount.replace(/,/g, '')
+    item.desc = desc
+
+    items.push(item);
+    if (i+1>=maxQueryCount) return false;
+  })
+  return items
+}
+
+function parseBilibili($) {
+  var items = []
+  $('ul#rank_list>li').each(function(i, elem) {
+    let url = $(this).find('div.content>a').attr('href')
+    let title = $(this).find('div.title').text()
+    let image = $(this).find('img').attr('data-img')
+    if (image.length == 0) image = $(this).find('img').attr('src')
+
+    let playCount = $(this).find('div.detail>span').eq(0).text()
+
+    var item = {}
+    item.title = title
+    if (!url.startsWith('http')) {
+      url = "http://www.bilibili.com" + url
+    }
+    item.capturedurl = url
+    if (image.startsWith('//')) {
+      image = 'http:'+image
+    }
+    item.imgh = image
+    item.playcount = playCount.replace(/,/g, '')
+
+    items.push(item);
+    if (i+1>=maxQueryCount) return false;
+  })
+  return items
 }
 
 module.exports = queryMap;

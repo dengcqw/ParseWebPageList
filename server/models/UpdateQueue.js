@@ -12,10 +12,10 @@ UpdateQueue.prototype._run = function() {
   let promiseGenerator = this.queue.shift()
   if (promiseGenerator) {
     this.running = true
-    console.log("----> start a update database job")
+    //console.log("----> start a update database job")
     promiseGenerator()
       .then(() => {
-        console.log("----> finish a update database job")
+        //console.log("----> finish a update database job")
         this.running = false
         this._run()
       })
@@ -26,7 +26,7 @@ UpdateQueue.prototype._run = function() {
       })
   } else {
     this.running = false
-    console.log("----> update queue is empty; stop running")
+    //console.log("----> update queue is empty; stop running")
   }
 }
 

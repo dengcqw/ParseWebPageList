@@ -7,7 +7,7 @@ simply save specific web page content to database and preview data from custom w
 * antd - An enterprise-class UI design language and React-based implementation. (https://github.com/ant-design/ant-design)
 * SQLite3 (http://expressjs.com/en/guide/database-integration.html#sqlite)
 * cheerio - server-side jquery-like tool (https://github.com/cheeriojs/cheerio)
-* PhantomJS - a headless WebKit scriptable with a JavaScript API  (http://phantomjs.org/)
+* PhantomJS - a headless WebKit scriptable with a JavaScript API  (http://phantomjs.org/ https://github.com/amir20/phantomjs-node)
 * webpack and so on
 
 ### TODO - tech improvement

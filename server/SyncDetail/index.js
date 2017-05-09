@@ -2,6 +2,7 @@
 const PromiseQueue = require('./PromiseQueue.js')
 const models = require('../models')
 const requestDetail = require('./fetchDetail.js')
+cosnt siteIds = require('../sites').siteIds
 
 const syncQueue_0 = new PromiseQueue()
 const syncQueue_1 = new PromiseQueue()
@@ -20,8 +21,14 @@ const syncQueue_2 = new PromiseQueue()
 function flattenHotList(hotList) {
   return Object.entries(hotList).reduce((reduced, [siteID, siteContent]) => {
     let itemsOfSite = Object.entries(siteContent).reduce((reduced, [categoryID, urlIds]) => {
-      if (!urlIds) console.log("----> urlIds is null: ", siteID, categoryID)
-      return reduced.concat(!urlIds ? [] : urlIds.map(urlID => ({siteID, categoryID, urlID})))
+      if (!urlIds) {
+        console.log("----> urlIds is null: ", siteID, categoryID)
+        return reduced
+      }
+      if (siteID == siteIds.bilibili || siteID == siteIds.acfun)  {
+        return reduced
+      }
+      return reduced.concat(urlIds.map(urlID => ({siteID, categoryID, urlID})))
     }, [])
 
     return reduced.concat(itemsOfSite)
@@ -45,7 +52,12 @@ function syncItemDetail(urlIdInfo) {
         return null
       }
       else { // if no docid then make a requset for detail
-        return requestDetail(Object.assign({}, urlIdInfo, {title:album.title})).then(detail => {
+        let title = album.title
+        // TODO: use api to fetch detail
+        if (urlIdInfo.siteID == siteIds.iqiyi && urlIdInfo.categoryID == 'zongyi') {
+          title = title.split('之')[0]
+        }
+        return requestDetail(Object.assign({}, urlIdInfo, {title})).then(detail => {
           let albumDocInfo = detail.albumDocInfo || {}
           if (albumDocInfo == undefined) {
             return null

@@ -20,8 +20,9 @@ var categoryColumnDef = (DataTypes, categoryIds) => categoryIds.map(categoryID =
       set: function(val) {
         // TODO: SyntaxError: Unexpected identifier for instanceOf
         // if (val instanceOf Array) val = val.join(';')
-        console.log("----> set site value", val)
+        console.log("----> set site model value", categoryID, val)
         if (val.length) val = val.join(';')
+        else throw new Error('save catetory error: '+ categoryID +' '+ val)
         this.setDataValue(categoryID, val)
       }
     }

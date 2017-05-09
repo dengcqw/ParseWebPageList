@@ -4,18 +4,11 @@
         "ecmascript"
     ],
     "plugins":{
-        "complete_strings": {
-            "maxLength" : 25
-        },
-        "doc_comment":{},
         "modules":{},
         "node_resolve":{},
         "node": {},
         "commonjs": {},
-        "es_modules":{},
-        "webpack": {
-            "configPath": "./webpack.config.js"
-        }
+        "es_modules":{}
     }
 }
 

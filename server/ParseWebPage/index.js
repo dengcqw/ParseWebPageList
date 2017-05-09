@@ -26,7 +26,8 @@ const parseCategory = (siteID, categoryID) => new Promise(function(res, rej) {
       {siteID, categoryID, url},
       (list, err) => {
         if (list) {
-          res(list)
+          let urlIds = list.result.hotItems.map(item => item.urlid)
+          res({siteID, categoryID, urlIds})
         } else {
           rej(err)
         }

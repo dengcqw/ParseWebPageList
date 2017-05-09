@@ -152,7 +152,7 @@ export default class ItemDetailModal extends React.Component {
         </p>
         <div style={{lineHeight: '80px'}}>
           竖图： <a ref='pagelink' href={imgv} target="_blank"><img className='detail-img' src={imgv} onError={this.onImageLoadErr} ></img></a>
-          横图： <a ref='pagelink' href={imgh} target="_blank"><img className='detail-img' src={imgh} onError={this.onImageLoadErr}></img></a>
+          横图： <a ref='pagelink' href={imgh} target="_blank"><img className='detail-img' src={imgh} onerror={this.onImageLoadErr}></img></a>
         </div>
         <div style={{lineHeight: '20px'}}>
           状态：{statusText} {this.requsetButton()} {this.saveButton()}

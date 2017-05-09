@@ -4,7 +4,7 @@ const siteIds = {
   youku    : "youku",
   qq       : "qq",
   sohu     : "sohu",
-  mgtv     : "imgo",
+  imgo     : "imgo",
   letv     : "letv",
   pptv     : "pptv",
   bilibili : "bilibili",
@@ -19,7 +19,7 @@ function getSiteID(href) {
   } else if(href.search(".bilibili.com") >= 0) {
     return siteIds.bilibili;
   } else if(href.search('.mgtv.com') >= 0) {
-    return siteIds.mgtv;
+    return siteIds.imgo;
   } else if(href.search('.sohu.') >= 0) {
     return siteIds.sohu;
   } else if(href.search('.le.') >= 0) {
