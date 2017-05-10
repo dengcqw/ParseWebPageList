@@ -65,9 +65,11 @@ const apiMap = {
       //.catch(err => {console.log(err); res.sendStatus(503)})
   },
   downloadJson: (req, res) => {
-    console.log(`Current directory: ${process.cwd()}`)
-    res.send('/reset.css')
+    models.exportData(models.createDateKey())
+      .then(data => res.send(JSON.stringify(data)))
+      .catch(err => {console.log(err); res.sendStatus(503)})
 
+    //res.send('/reset.css')
     // Below send file content
     //res.sendFile(process.cwd()+'/README.md', options, function (err) {
       //if (err) {

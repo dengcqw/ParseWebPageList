@@ -42,8 +42,10 @@ module.exports = (url) => (
     return _page.property('content')
   }).then(content => {
     setTimeout(() => {
-      _page.close()
-      _page = null
+      if (_page) {
+        _page.close()
+        _page = null
+      }
     }, 1)
     return content
   })

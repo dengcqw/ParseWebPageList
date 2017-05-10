@@ -9,6 +9,7 @@ var { getSiteModelName } = require('../sites')
 
 var { getHotListPromise } = require('./getHotList.js')
 var { getAlbumsPromise } = require('./getAlbums.js')
+var { exportDataWrapper } = require('./exportData.js')
 
 var sequelize = new Sequelize('', '', '', {
   dialect: 'sqlite',
@@ -43,5 +44,6 @@ db.createDateKey = () => new Date().toISOString().slice(0, 10)
 db.updateQueue = new UpdateQueue()
 db.getHotList = getHotListPromise.bind(db)
 db.getAlbums = getAlbumsPromise.bind(db)
+db.exportData = exportDataWrapper(db)
 
 module.exports = db;

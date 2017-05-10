@@ -93,7 +93,7 @@ class App extends React.Component {
           </Button>
           <div style={{display:'inline-block', width:'40px'}}/>
           <Button type="primary" loading={isUploadJson} onClick={this.uploadJson}>
-            上传数据
+            发布
           </Button>
         </Header>
         <Layout>

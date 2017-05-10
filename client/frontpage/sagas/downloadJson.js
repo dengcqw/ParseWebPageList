@@ -7,9 +7,7 @@ import Api from '../services'
 
 function* downloadJsonAsync(action) {
   yield put(downloadJsonStateAction(true))
-  let filePath = yield Api.downloadJson()
-  console.log("----> msg", filePath)
-  // TODO: open file path
+  yield Api.downloadJson()
   yield put(downloadJsonStateAction(false))
 }
 

@@ -1,7 +1,7 @@
 
 
-var models = require('./index.js')
-var { siteIds, getSiteModelName } = require('../sites')
+var models = require('../server/models')
+var { siteIds, getSiteModelName } = require('../server/sites')
 
 var test_dates = [
   '20170507',
