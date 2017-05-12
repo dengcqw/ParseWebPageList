@@ -8,7 +8,6 @@ var CopyWebpackPlugin = require("copy-webpack-plugin");
 var devConfig = {
   entry: {
     "frontpage.js": ['./client/frontpage', hotMiddlewareScript],
-    //"login.js": ['./client/login', hotMiddlewareScript]
   },
   output: {
     filename: './[name]',
@@ -56,7 +55,9 @@ var devConfig = {
       { from: './node_modules/react-dom/dist/react-dom.min.js'},
       { from: './node_modules/antd/dist/antd.min.js'},
       { from: './node_modules/antd/dist/antd.min.css'},
-      { from: './client/common/reset.css'}
+      { from: './client/common/reset.css'},
+      { from: './WX20170510-193405.png'},
+      { from: './server/views/tvg-dl-page.html'}
     ], {copyUnmodified: true})
   ],
   externals: {

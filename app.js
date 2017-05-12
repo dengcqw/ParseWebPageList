@@ -5,7 +5,7 @@ var express = require('express'),
 var bodyParser = require('body-parser');
 
 var app = express();
-var isDev = process.env.NODE_ENV !== 'production';
+var isDev = false;// process.env.NODE_ENV !== 'production';
 var port = 3000;
 
 // assign the ejs engine to .html files
@@ -68,6 +68,11 @@ if (isDev) {
 
     // static assets served by express.static() for production
     app.use(express.static(path.join(__dirname, 'public')));
+
+    app.get('/test/:id', function (req, res) {
+      console.log("----> test html: ", req.params.id)
+      res.render(req.params.id)
+    });
     require('./server/routes')(app);
     app.listen(port, function () {
         console.log('App (production) is now running on port 3000!');
