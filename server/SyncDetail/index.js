@@ -13,6 +13,16 @@ const syncQueue_2 = new PromiseQueue()
 // 3. fetch detail if docid is empty - network requset
 // 4. save the detail - write db
 
+
+let getQyImageURL= (width, height) => url => {
+  let index = url.search('.jpg')
+  if (index == -1) {
+    return ""
+  } else {
+    return url.substring(0, index) + "_" + width +"_"+ height +".jpg"
+  }
+}
+
 /*
 {siteID: {
   categoryID: [urlids]   =>   [{siteID, catetoryID, urlID}]
@@ -53,17 +63,24 @@ function syncItemDetail(urlIdInfo) {
       //}
       //else { // if no docid then make a requset for detail
         let title = album.title
+        let updateTitle = false
+        let isQy =false
         // TODO: use api to fetch detail
-        if (urlIdInfo.siteID == siteIds.iqiyi && urlIdInfo.categoryID == 'zongyi') {
-          title = title.split('之')[0]
+        if (urlIdInfo.siteID == siteIds.iqiyi) {
+            isQy = true
+            if (urlIdInfo.categoryID == 'zongyi') {
+              title = title.split('之')[0]
+              updateTitle = true
+            }
         }
         return requestDetail(Object.assign({}, urlIdInfo, {title})).then(detail => {
           let albumDocInfo = detail.albumDocInfo || {}
           if (albumDocInfo == undefined) {
             return null
           }
+          let transferImage = getQyImageURL(260, 360)
           album.imgh = albumDocInfo.albumHImage
-          album.imgv = albumDocInfo.albumVImage
+          album.imgv =isQy ? transferImage(albumDocInfo.albumVImage) : albumDocInfo.albumVImage
           album.desc = albumDocInfo.description
           album.docid = detail.doc_id
           try {
@@ -79,17 +96,20 @@ function syncItemDetail(urlIdInfo) {
               let totalVideoCount = albumDocInfo.video_lib_meta.total_video_count
               if (totalVideoCount == '0') {
                 episode = `更新至${update}集`
+              } else if (totalVideoCount == update) {
+                episode = `${totalVideoCount}集全`
               } else {
-                episode = `更新至${update}集/${totalVideoCount}集全`
+                episode = `更新至${update}集`
               }
-            } else {
-              episode = update
             }
             album.episode = episode
           } catch(e) {
             console.log("----> format video update info error", err)
           }
 
+          if (updateTitle) {
+            album.title = albumDocInfo.albumTitle
+          }
           console.log("----> will save album", album.title)
           return album.save()
         })
@@ -124,5 +144,3 @@ module.exports = function syncDetail(date) {
     .then(flattenHotList)
     .then(enqueueSyncItemDetail)
 }
-
-//syncDetail('2017-05-04')

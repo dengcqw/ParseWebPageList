@@ -26,7 +26,7 @@ function exportData(models, date, callback/* (result, err) */) {
                 imgh: imgh || "",
                 playcount: album.playcount || "",
                 episode: album.episode || "",
-                docid: album.docid || "",
+                //docid: album.docid || "",
                 urlid: album.urlid || ""
               }
             })

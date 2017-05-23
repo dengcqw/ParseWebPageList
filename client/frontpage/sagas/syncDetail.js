@@ -3,7 +3,7 @@ import { put, takeLatest } from 'redux-saga/effects'
 
 import {syncDetailStateAction} from '../reducers/uistate.js'
 import {getContentActionCreator} from './content.js'
-import {deleteAlbumsAction} from './albums.js'
+import {deleteAlbumsAction} from '../reducers/albums.js'
 import Api from '../services'
 
 function* syncDetailAsync(action) {

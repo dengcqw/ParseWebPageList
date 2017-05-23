@@ -68,19 +68,6 @@ const apiMap = {
     models.exportData(models.createDateKey())
       .then(data => res.send(JSON.stringify(data)))
       .catch(err => {console.log(err); res.sendStatus(503)})
-
-    //res.send('/reset.css')
-    // Below send file content
-    //res.sendFile(process.cwd()+'/README.md', options, function (err) {
-      //if (err) {
-        //next(err);
-      //}
-    //});
-    //res.download(process.cwd()+'/README.md', 'reset.css', function(err){
-      //if (err) {
-        //console.log("----> msg", err)
-      //}
-    //});
   },
   saveDetail: (req, res) => {
     let urlid = req.body.urlid
