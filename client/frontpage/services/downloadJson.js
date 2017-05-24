@@ -13,13 +13,13 @@ const downloadFile = fileName => content => {
     console.log("----> download file", fileName, content)
 }
 
-export default () => {
-  return fetch('/api/downloadJson')
+export default (type, fileName) => {
+  return fetch('/api/downloadJson?type='+type)
     .then(function(response) {
       if (response.status >= 400) {
         throw new Error("Bad response from server")
       }
       return response.text()
     })
-    .then(downloadFile('exportData.json'))
+    .then(downloadFile(fileName))
 }

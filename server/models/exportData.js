@@ -4,7 +4,7 @@ const PromiseQueue = require('../SyncDetail/PromiseQueue.js')
 const promiseQueue_0 = new PromiseQueue()
 
 // models is db defined in ./idnex.js
-function exportData(models, date, callback/* (result, err) */) {
+function exportData(models, date, filter, callback/* (result, err) */) {
   models.getHotList(date)
   .then(hotList => {
     let jobCount = 0
@@ -15,8 +15,7 @@ function exportData(models, date, callback/* (result, err) */) {
         console.log("----> create promise", siteID, categoryID)
         let promise = () => models.getAlbums(urlIds).then(albums => {
           try {
-            let existDocids = {}
-            let repeatFilterdAlbums = urlIds.map(urlID => {
+            let exportAlbums = urlIds.map(urlID => {
               let album = albums[urlID]
               let imgh = siteID == 'acfun' || siteID == 'bilibili' ? album.imgh : ''
               return {
@@ -26,22 +25,25 @@ function exportData(models, date, callback/* (result, err) */) {
                 imgh: imgh || "",
                 playcount: album.playcount ? "播放：" + album.playcount : "",
                 episode: album.episode || "",
-                //docid: album.docid || "",
+                docid: album.docid || "",
                 urlid: album.urlid || ""
               }
             })
-            .filter((item, index, self) => {
-              if (!item.docid || item.docid == "")  return true // acfun and bilibili have not docid
-              if (existDocids[item.docid]) {
-                return false
-              } else {
-                existDocids[item.docid] = item.docid
-                return true
-              }
-            })
-            console.log("----> get filter", repeatFilterdAlbums.length)
-
-            hotList[siteID][categoryID] = repeatFilterdAlbums
+            // acfun and bilibili have not docid
+            if (siteID != 'acfun' && siteID != "bilibili" && filter == true) {
+              let existDocids = {} // filter repeat album
+              exportAlbums = exportAlbums.filter((item, index, self) => {
+                if (!item.docid || item.docid == "") {
+                  return false
+                } else if (existDocids[item.docid]) {
+                  return false
+                } else {
+                  existDocids[item.docid] = item.docid
+                  return true
+                }
+              })
+            }
+            hotList[siteID][categoryID] = exportAlbums
           }catch(e) {
             console.log("----> export data: process album err", e)
           }
@@ -70,9 +72,9 @@ function exportData(models, date, callback/* (result, err) */) {
   .catch(err => {console.log(err); res.sendStatus(503)})
 }
 
-function exportDataPromise(models, date) {
+function exportDataPromise(models, date, filter) {
   return new Promise((res, rej) => {
-    exportData(models, date, (result, err) => {
+    exportData(models, date, filter, (result, err) => {
       if (err) {
         rej(err)
       } else {
@@ -84,6 +86,6 @@ function exportDataPromise(models, date) {
 
 // send all the urlid
 module.exports = {
-  exportDataWrapper : (models) => (date) => exportDataPromise(models, date)
+  exportDataWrapper : (models) => (date, filter) => exportDataPromise(models, date, filter)
 }
 

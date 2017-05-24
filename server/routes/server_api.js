@@ -7,6 +7,7 @@ const requestDetail = require('../SyncDetail/fetchDetail.js')
 const models = require('../models')
 const urlConfig = require('../sites').urlConfig
 const syncDetail = require('../SyncDetail')
+const validation = require('../models/validateData.js')
 
 const apiMap = {
   fetchAll: (req, res) => {
@@ -20,7 +21,7 @@ const apiMap = {
       .catch(err => {console.log(err); res.sendStatus(503)})
   },
   itemDetail: (req, res) => {
-    let itemInfo = {title:req.query.title, categoryID:req.query.categoryid, siteID:req.query.siteid}
+    let itemInfo = {title:req.query.title, categoryID:req.query.categoryid, siteID:req.query.siteid, isAlbum: true}
     requestDetail(itemInfo)
       .then(content => res.send(content))
       .catch(err => { console.log(err); res.sendStatus(503) })
@@ -65,9 +66,17 @@ const apiMap = {
       //.catch(err => {console.log(err); res.sendStatus(503)})
   },
   downloadJson: (req, res) => {
-    models.exportData(models.createDateKey())
-      .then(data => res.send(JSON.stringify(data)))
-      .catch(err => {console.log(err); res.sendStatus(503)})
+    let filter = req.query.type == '0' ? true : false
+    models.exportData(models.createDateKey(), filter)
+    .then(data => {
+      if (req.query.type == '0') { // hot list
+        return res.send(JSON.stringify(data))
+      } else if (req.query.type == '1') {
+        return res.send(validation(data))
+      } else {
+        throw new Error("download json type error: " + req.query.type)
+      }
+    }).catch(err => {console.log(err); res.sendStatus(503)})
   },
   saveDetail: (req, res) => {
     let urlid = req.body.urlid

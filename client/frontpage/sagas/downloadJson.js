@@ -7,7 +7,7 @@ import Api from '../services'
 
 function* downloadJsonAsync(action) {
   yield put(downloadJsonStateAction(true))
-  yield Api.downloadJson()
+  yield Api.downloadJson(action.contentType, action.fileName)
   yield put(downloadJsonStateAction(false))
 }
 
@@ -16,10 +16,12 @@ export default function* watchDownloadJsonAsync() {
   yield takeLatest('DOWNLOAD_JSON_ASYNC', downloadJsonAsync)
 }
 
-export function downloadJsonActionCreator() {
+export function downloadJsonActionCreator(contentType, fileName) {
   console.log("----> downloadJsonActionCreator")
   return {
-    type: "DOWNLOAD_JSON_ASYNC"
+    type: "DOWNLOAD_JSON_ASYNC",
+    contentType,
+    fileName
   }
 }
 

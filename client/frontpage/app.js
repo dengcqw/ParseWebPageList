@@ -35,7 +35,8 @@ class App extends React.Component {
     this.updateMenu = this.props.updateMenu
     this.fetchHotList = this.props.fetchAll
     this.uploadJson = this.props.uploadJson
-    this.downloadJson = this.props.downloadJson
+    this.downloadJson = ()=>this.props.downloadJson("0", "hotlist.json")
+    this.validateJson = ()=>this.props.downloadJson("1", "validation.txt")
     this.syncDetail = () => this.props.syncDetail(this.props.selectedMenu)
     this.changeDisplayType = this.changeDisplayType.bind(this)
   }
@@ -88,8 +89,12 @@ class App extends React.Component {
             同步全网
           </Button>
           <div style={{display:'inline-block', width:'40px'}}/>
-          <Button type="primary" loading={isDownloadJson} onClick={this.downloadJson}>
+          <Button type="primary" disabled={isDownloadJson} onClick={this.downloadJson}>
             下载数据
+          </Button>
+          <div style={{display:'inline-block', width:'40px'}}/>
+          <Button type="primary" disabled={isDownloadJson} onClick={this.validateJson}>
+            验证数据
           </Button>
           <div style={{display:'inline-block', width:'40px'}}/>
           <Button type="primary" loading={isUploadJson} onClick={this.uploadJson}>
