@@ -24,7 +24,7 @@ function exportData(models, date, callback/* (result, err) */) {
                 url: album.capturedurl || "",
                 imgv: album.imgv || "",
                 imgh: imgh || "",
-                playcount: album.playcount || "",
+                playcount: album.playcount ? "播放：" + album.playcount : "",
                 episode: album.episode || "",
                 //docid: album.docid || "",
                 urlid: album.urlid || ""

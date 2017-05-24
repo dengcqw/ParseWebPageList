@@ -25,11 +25,11 @@
     "dongman":"http://www.mgtv.com/top/cartoon/",
     "dianying": "http://www.mgtv.com/top/movie/"
   },
-  "acfun": {
-    "yingshi":"http://www.acfun.cn/rank/list/#cid=68;range=1"
-  },
   "bilibili": {
     "dianshiju":"http://www.bilibili.com/ranking#!/all/11/0/3/",
     "dianying": "http://www.bilibili.com/ranking#!/all/23/0/3/"
+  },
+  "acfun": {
+    "yingshi":"http://www.acfun.cn/rank/list/#cid=68;range=1"
   }
 }

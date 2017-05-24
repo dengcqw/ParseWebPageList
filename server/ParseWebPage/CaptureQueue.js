@@ -24,11 +24,16 @@ const captureList = ({siteID, categoryID, url})=> () => {
     throw new Error('query fn undefined: ', siteID)
   }
 
+  let delay = siteID == "acfun" ? 3000 : 100
+
   // TODO: timeout trigger but promise not cancel, so log will print later
-  return loadWebPage(url)
+  return loadWebPage(url, delay)
     .then(html=>queryFn(cheerio.load(html)))
     .then(hotItems=>{ // hotItmes keep properties same wtih model definition
       console.log("fetched: ", siteID, categoryID, url, hotItems.length);
+      if (hotItems.length == 0) {
+        throw new Error('fetched empty hotlist')
+      }
       // 如果是bilibili不删除井号后的数据
       let partStrs = (siteID == 'bilibili')?['?']:['?','#']
       hotItems.forEach(function(item) {
@@ -58,7 +63,7 @@ const promiseRetry = (getPromise, retryCount, interval) =>  new Promise(function
           reject(err)
         } else {
           console.log("----> capture race promise error", err)
-          retryWrapper()
+          setTimeout(retryWrapper, 200)
         }
       })
   }
@@ -141,7 +146,7 @@ CaptureQueue.prototype.updateDatabase = function(listInfo, hotList) {
       return (
         models.Album.findOrCreate(query)
         .spread(function(album, created) {
-          console.log("----> update album database created: ", created)
+          console.log("----> update album database created: ", created, item.title)
           return album.update(item)
         })
       )
@@ -162,7 +167,7 @@ CaptureQueue.prototype.saveToFile = function(listInfo, hotList) {
 }
 
 CaptureQueue.prototype.captureList = function(listInfo, callback) {
-  let timeout = listInfo.siteID == 'acfun' ? 60000 : 30000
+  let timeout = listInfo.siteID == 'acfun' ? 10000 : 10000
   this.queue.push({listInfo, callback, timeout})
   this._run()
 }
@@ -176,7 +181,7 @@ CaptureQueue.prototype.captureAll = function(callback) {
   let jobs = getAllListInfo().map(listInfo => {
     return {
       listInfo: listInfo,
-      timeout: (listInfo.siteID == 'acfun' ? 60000 : 30000),
+      timeout: (listInfo.siteID == 'acfun' ? 10000 : 10000),
       callback: (list, err) => {
         if (list) {
           let siteID = list.siteID;

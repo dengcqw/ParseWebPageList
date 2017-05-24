@@ -93,7 +93,16 @@ function parseAcfun($) {
       image = 'http:'+image
     }
     item.imgh = image
-    item.playcount = playCount.replace(/,/g, '')
+    function transferPlayCount(playCount) {
+      if (playCount.includes("万")) {
+        return playCount
+      } else if (parseInt(playCount) > 10000) {
+        return (playCount/10000).toFixed(2)+"万"
+      } else {
+        return playCount
+      }
+    }
+    item.playcount = transferPlayCount(playCount.replace(/,/g, ''))
     item.desc = desc
 
     items.push(item);
