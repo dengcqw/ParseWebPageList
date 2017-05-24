@@ -56,65 +56,66 @@ function getAlbumsPromise(urlID) {
 
 function syncItemDetail(urlIdInfo) {
   return getAlbumsPromise(urlIdInfo.urlID) // use urlID get album detail
-    .then(album => {
-      //if (!album || album.docid) {
-        //console.log("----> album has docid: ", album.docid)
-        //return null
-      //}
-      //else { // if no docid then make a requset for detail
-        let title = album.title
-        let updateTitle = false
-        let isQy =false
-        // TODO: use api to fetch detail
-        if (urlIdInfo.siteID == siteIds.iqiyi) {
-            isQy = true
-            if (urlIdInfo.categoryID == 'zongyi') {
-              title = title.split('之')[0]
-              updateTitle = true
-            }
+  .then(album => {
+    let title = album.title
+    let updateTitle = false
+    let isQy =false
+    let isAlbum = true
+    // TODO: use api to fetch detail
+    if (urlIdInfo.siteID == siteIds.iqiyi) {
+      isQy = true
+      if (urlIdInfo.categoryID == 'zongyi') {
+        if (title.includes('之')) {
+          title = title.split('之')[0]
+        } else {
+          isAlbum =false
         }
-        return requestDetail(Object.assign({}, urlIdInfo, {title})).then(detail => {
-          let albumDocInfo = detail.albumDocInfo || {}
-          if (albumDocInfo == undefined) {
-            return null
+        updateTitle = true
+      }
+    }
+    return requestDetail(Object.assign({}, urlIdInfo, {title, isAlbum})).then(detail => {
+      let albumDocInfo = detail.albumDocInfo || {}
+      if (albumDocInfo == undefined) {
+        return null
+      }
+      // 单视频搜索需要检查标题相同
+      if (isAlbum == false && albumDocInfo.albumTitle != title) {
+        return null
+      }
+      let transferImage = getQyImageURL(260, 360)
+      album.imgh = albumDocInfo.albumHImage
+      album.imgv =isQy ? transferImage(albumDocInfo.albumVImage) : albumDocInfo.albumVImage
+      album.desc = albumDocInfo.description
+      album.docid = detail.doc_id
+      try {
+        let episode = ''
+        let update = albumDocInfo.video_lib_meta.filmtv_update_strategy
+        if (update.search(/^\d{8}$/g) == 0) { // ag. 20170505
+          //filmtv_update_strategy : "20170409"
+          //season : 3
+          update = update.substr(4)
+          update = update.substr(0,2) + '-' + update.substr(2) + '期'
+          episode = update
+        } else if (update.search(/^\d{1,4}$/g) == 0 && urlIdInfo.categoryID != 'dianying') {
+          let totalVideoCount = albumDocInfo.video_lib_meta.total_video_count
+          if (totalVideoCount != '0' && parseInt(totalVideoCount ) <= parseInt(update)) {
+            episode = `${totalVideoCount}集全`
+          } else {
+            episode = `更新至${update}集`
           }
-          let transferImage = getQyImageURL(260, 360)
-          album.imgh = albumDocInfo.albumHImage
-          album.imgv =isQy ? transferImage(albumDocInfo.albumVImage) : albumDocInfo.albumVImage
-          album.desc = albumDocInfo.description
-          album.docid = detail.doc_id
-          try {
-            let episode = ''
-            let update = albumDocInfo.video_lib_meta.filmtv_update_strategy
-            if (update.search(/^\d{8}$/g) == 0) { // ag. 20170505
-              //filmtv_update_strategy : "20170409"
-              //season : 3
-              update = update.substr(4)
-              update = update.substr(0,2) + '-' + update.substr(2) + '期'
-              episode = update
-            } else if (update.search(/^\d{1,4}$/g) == 0 && urlIdInfo.categoryID != 'dianying') {
-              let totalVideoCount = albumDocInfo.video_lib_meta.total_video_count
-              if (totalVideoCount == '0') {
-                episode = `更新至${update}集`
-              } else if (totalVideoCount == update) {
-                episode = `${totalVideoCount}集全`
-              } else {
-                episode = `更新至${update}集`
-              }
-            }
-            album.episode = episode
-          } catch(e) {
-            console.log("----> format video update info error", err)
-          }
+        }
+        album.episode = episode
+      } catch(e) {
+        console.log("----> format video update info error", err)
+      }
 
-          if (updateTitle) {
-            album.title = albumDocInfo.albumTitle
-          }
-          console.log("----> will save album", album.title)
-          return album.save()
-        })
-      //}
+      if (updateTitle) {
+        album.title = albumDocInfo.albumTitle
+      }
+      console.log("----> will save album", album.title)
+      return album.save()
     })
+  })
 }
 
 function enqueueSyncItemDetail(urlIdInfos) {
