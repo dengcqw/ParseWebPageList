@@ -9,7 +9,7 @@ function exportData(models, date, filter, callback/* (result, err) */) {
   .then(hotList => {
     let jobCount = 0
     let promiseArr = []
-    let urlIds = Object.entries(hotList).forEach(([siteID, siteContent]) => {
+    Object.entries(hotList).forEach(([siteID, siteContent]) => {
       Object.entries(siteContent).forEach(([categoryID, urlIds]) => {
         let urlIDMap = {}
         console.log("----> create promise", siteID, categoryID)

@@ -8,6 +8,7 @@ const models = require('../models')
 const urlConfig = require('../sites').urlConfig
 const syncDetail = require('../SyncDetail')
 const validation = require('../models/validateData.js')
+const uploadFile = require('./upload.js')
 
 const apiMap = {
   fetchAll: (req, res) => {
@@ -58,12 +59,12 @@ const apiMap = {
       .catch(err => {console.log(err); res.sendStatus(503)})
   },
   uploadJson: (req, res) => {
-    setTimeout(()=> {
-      res.send()
-    }, 2000)
-    //syncDetail(req.query.date)
-      //.then(() => res.send())
-      //.catch(err => {console.log(err); res.sendStatus(503)})
+    models.exportData(models.createDateKey(), true)
+    .then(data => {
+      return uploadFile(JSON.stringify(data))
+    }).then(response => {
+      res.send("上传成功")
+    }).catch(err => {console.log(err); res.sendStatus(503)})
   },
   downloadJson: (req, res) => {
     let filter = req.query.type == '0' ? true : false

@@ -3,7 +3,7 @@
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
-const fetchDetailURL = require('./api.js')
+const fetchDetailURL = require('./api.js').fetchDetailURL
 
 function _requestDetail(itemInfo, cb) {
   console.log("----> fetch detial itemInfo: ", itemInfo)
