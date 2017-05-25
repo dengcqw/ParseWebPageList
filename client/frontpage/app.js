@@ -35,7 +35,7 @@ class App extends React.Component {
     this.updateMenu = this.props.updateMenu
     this.fetchHotList = this.props.fetchAll
     this.uploadJson = this.props.uploadJson
-    this.downloadJson = ()=>this.props.downloadJson("0", "hotlist.json")
+    this.downloadJson = ()=>this.props.downloadJson("0", "top.json")
     this.validateJson = ()=>this.props.downloadJson("1", "validation.txt")
     this.syncDetail = () => this.props.syncDetail(this.props.selectedMenu)
     this.changeDisplayType = this.changeDisplayType.bind(this)

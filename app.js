@@ -4,9 +4,11 @@ var express = require('express'),
     consolidate = require('consolidate');
 var bodyParser = require('body-parser');
 
+var autojob = require('./autojob.js')
+
 var app = express();
 var isDev = process.env.NODE_ENV !== 'production';
-var port = 3000;
+var port = process.env.SERVER_PORT || 3000;
 
 // assign the ejs engine to .html files
 app.engine('html', consolidate.ejs);
@@ -50,7 +52,8 @@ if (isDev) {
 
     require('./server/routes')(app);
     app.listen(port, function () {
-        console.log('App (production) is now running on port 3000!');
+        console.log('App (develop) is now running on port ' + port);
+        autojob()
     });
 
     // TODO: check it later, busy now
@@ -70,6 +73,8 @@ if (isDev) {
     app.use(express.static(path.join(__dirname, 'public')));
     require('./server/routes')(app);
     app.listen(port, function () {
-        console.log('App (production) is now running on port 3000!');
+        console.log('App (production) is now running on port ' + port);
+        autojob()
     });
 }
+

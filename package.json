@@ -6,7 +6,8 @@
   "scripts": {
     "start": "cross-env NODE_ENV=dev supervisor --watch 'server,app.js' --extensions 'node,js,html' app",
     "build": "webpack",
-    "production": "webpack --config webpack.production.config.js -p & cross-env NODE_ENV=production node app"
+    "production": "webpack --config webpack.production.config.js -p & cross-env NODE_ENV=production node app",
+    "autojob": "cross-env NODE_ENV=production RUN_AUTOJOB=true node app"
   },
   "repository": {
     "type": "git",

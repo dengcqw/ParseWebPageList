@@ -35,7 +35,7 @@ siteModels.forEach(model => db[model.name] = model)
 db.Album = albumModel
 db.CaptureInfo = captureInfoModel
 
-console.log("----> exist tables models before define: ", sequelize.models)
+console.log("----> exist tables models before define:\n ", sequelize.models)
 
 db.sequelize = sequelize
 db.Sequelize = Sequelize

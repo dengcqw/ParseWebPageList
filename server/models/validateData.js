@@ -18,7 +18,7 @@ module.exports = (json) => {
         } else {
           if (album.docid.length == 0) {
             albumCheck = albumCheck + "未获取到专辑"
-            report.push("      "+`${album.title}：${albumCheck}`)
+            report.push("      "+`${album.title}：${albumCheck}  [${album.url}]`)
             return
           }
           if (album.imgv.length == 0) {
@@ -35,7 +35,7 @@ module.exports = (json) => {
           }
         }
         if (albumCheck.length) {
-          report.push("      "+`${album.title}：${albumCheck}`)
+          report.push("      "+`${album.title}：${albumCheck}  [${album.url}]`)
         }
       })
     })
