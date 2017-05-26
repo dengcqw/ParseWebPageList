@@ -1,7 +1,7 @@
 
 const PromiseQueue = require('../SyncDetail/PromiseQueue.js')
 
-const promiseQueue_0 = new PromiseQueue()
+const promiseQueue = new PromiseQueue()
 
 // models is db defined in ./idnex.js
 function exportData(models, date, filter, callback/* (result, err) */) {
@@ -65,7 +65,7 @@ function exportData(models, date, filter, callback/* (result, err) */) {
     jobCount = promiseArr.length
     console.log("----> jobs", jobCount)
     promiseArr.forEach(promise => {
-      promiseQueue_0.enqueue(promise)
+      promiseQueue.enqueue(promise)
     })
 
   })

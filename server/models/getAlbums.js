@@ -2,6 +2,7 @@
 // need bind this to index db obj
 function getAlbumsPromise(urlIds) {
   return new Promise((res, rej) => {
+    console.log("----> get album promise")
     getAlbums(this, urlIds, function(result, err) {
       if (result) res(result)
       else rej(err)
@@ -12,8 +13,8 @@ function getAlbumsPromise(urlIds) {
 
 // models is db defined in ./idnex.js
 function getAlbums(models, urlIds, callback/* (result, err) */) {
-  if (!urlIds) {
-    callback(null, new Error('get hot list with null date'))
+  if (!urlIds || urlIds.length == 0) {
+    callback(null, new Error('get albums with empty urlids'))
     return
   }
   let jobCount = urlIds.length

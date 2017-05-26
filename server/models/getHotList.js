@@ -16,7 +16,7 @@ function getHotListPromise(date) {
 
 // models is db defined in ./idnex.js
 function getHotList(models, date, callback/* (result, err) */) {
-  if (!date) {
+  if (!date || date.length == 0) {
     callback(null, new Error('get hot list with null date'))
     return
   }

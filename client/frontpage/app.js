@@ -82,7 +82,7 @@ class App extends React.Component {
       <Layout>
         {
           this.state.warningMsg.length > 0
-          ? <Alert message="Very long warning text warning text text text text text text text" banner closable />
+          ? <Alert message={this.state.warningMsg} banner closable />
           : null
         }
         <Header className="header">
