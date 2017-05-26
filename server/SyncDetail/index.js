@@ -90,6 +90,7 @@ function syncItemDetail(urlIdInfo) {
       try {
         let episode = ''
         let update = albumDocInfo.video_lib_meta.filmtv_update_strategy
+        let totalVideoCount = albumDocInfo.video_lib_meta.total_video_count
         if (update.search(/^\d{8}$/g) == 0) { // ag. 20170505
           //filmtv_update_strategy : "20170409"
           //season : 3
@@ -97,7 +98,6 @@ function syncItemDetail(urlIdInfo) {
           update = update.substr(0,2) + '-' + update.substr(2) + '期'
           episode = update
         } else if (update.search(/^\d{1,4}$/g) == 0 && urlIdInfo.categoryID != 'dianying') {
-          let totalVideoCount = albumDocInfo.video_lib_meta.total_video_count
           if (totalVideoCount != '0' && parseInt(totalVideoCount ) <= parseInt(update)) {
             episode = `${totalVideoCount}集全`
           } else {
@@ -107,6 +107,10 @@ function syncItemDetail(urlIdInfo) {
         album.episode = episode
       } catch(e) {
         console.log("----> format video update info error", err)
+        let totalVideoCount = albumDocInfo.itemTotalNumber
+        if (totalVideoCount && totalVideoCount != '1' && urlIdInfo.categoryID == 'dianshiju') {
+          album.episode = `${totalVideoCount}集全`
+        }
       }
 
       if (updateTitle) {
