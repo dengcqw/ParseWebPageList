@@ -22,7 +22,7 @@ This project template base on the [demo](https://github.com/kenanpengyou/express
 
 ## Usage
 
-1. install [phantomjs](http://phantomjs.org/download.html)
+1. install [phantomjs](http://phantomjs.org/download.html) and supervisor with brew
 2. install node_modules with npm install
 3. execute bin/setup-db.js to create database.db or simply rename database.db.bk to database.db
 4. npm start
