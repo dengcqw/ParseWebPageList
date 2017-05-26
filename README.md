@@ -18,11 +18,11 @@ simply save specific web page content to database and preview data from custom w
 
 ## project template
 
-This project template base on the demo(https://github.com/kenanpengyou/express-webpack-full-live-reload-example)
+This project template base on the [demo](https://github.com/kenanpengyou/express-webpack-full-live-reload-example)
 
 ## Usage
 
-1. install phantomjs [http://phantomjs.org/download.html]
+1. install [phantomjs](http://phantomjs.org/download.html)
 2. install node_modules
 3. execute bin/setup-db.js to create database.db
 4. npm start
