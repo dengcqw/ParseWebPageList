@@ -24,7 +24,7 @@ This project template base on the [demo](https://github.com/kenanpengyou/express
 
 1. install [phantomjs](http://phantomjs.org/download.html)
 2. install node_modules with npm install
-3. execute bin/setup-db.js to create database.db
+3. execute bin/setup-db.js to create database.db or simply rename database.db.bk to database.db
 4. npm start
 5. open http://localhost:3000
 

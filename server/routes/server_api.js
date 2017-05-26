@@ -68,7 +68,8 @@ const apiMap = {
   },
   downloadJson: (req, res) => {
     let filter = req.query.type == '0' ? true : false
-    models.exportData(models.createDateKey(), filter)
+    let date = req.query.date
+    models.exportData(date, filter)
     .then(data => {
       if (req.query.type == '0') { // hot list
         return res.send(JSON.stringify(data))

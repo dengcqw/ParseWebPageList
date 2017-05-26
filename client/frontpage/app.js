@@ -4,7 +4,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import { Layout, Menu, Breadcrumb, Icon, Button, Radio } from 'antd';
+import { Layout, Menu, Breadcrumb, Icon, Button, Radio, Alert } from 'antd';
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 
@@ -30,13 +30,13 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      visible: false
+      warningMsg: ""
     }
     this.updateMenu = this.props.updateMenu
     this.fetchHotList = this.props.fetchAll
     this.uploadJson = this.props.uploadJson
-    this.downloadJson = ()=>this.props.downloadJson("0", "top.json")
-    this.validateJson = ()=>this.props.downloadJson("1", "validation.txt")
+    this.downloadJson = (date)=>this.props.downloadJson("0", "top.json", date)
+    this.validateJson = (date)=>this.props.downloadJson("1", "validation.txt", date)
     this.syncDetail = () => this.props.syncDetail(this.props.selectedMenu)
     this.changeDisplayType = this.changeDisplayType.bind(this)
   }
@@ -80,24 +80,41 @@ class App extends React.Component {
 
     return (
       <Layout>
+        {
+          this.state.warningMsg.length > 0
+          ? <Alert message="Very long warning text warning text text text text text text text" banner closable />
+          : null
+        }
         <Header className="header">
           <Button type="primary" loading={isFetchingAll} onClick={this.fetchHotList}>
             爬取榜单
           </Button>
           <div style={{display:'inline-block', width:'40px'}}/>
-          <Button type="primary" loading={isSync} onClick={this.syncDetail}>
+          <Button type="primary" loading={isSync} disabled={true} onClick={this.syncDetail}>
             同步全网
           </Button>
           <div style={{display:'inline-block', width:'40px'}}/>
-          <Button type="primary" disabled={isDownloadJson} onClick={this.downloadJson}>
+          <Button type="primary" disabled={isDownloadJson} onClick={()=>{
+            if (selectedMenu.length) {
+              this.downloadJson(selectedMenu)
+            } else {
+              this.setState({warningMsg: "请选择有数据的日期"})
+            }
+          }}>
             下载数据
           </Button>
           <div style={{display:'inline-block', width:'40px'}}/>
-          <Button type="primary" disabled={isDownloadJson} onClick={this.validateJson}>
+          <Button type="primary" disabled={isDownloadJson} onClick={()=> {
+            if (selectedMenu.length) {
+              this.validateJson(selectedMenu)
+            } else {
+              this.setState({warningMsg: "请选择有数据的日期"})
+            }
+          }}>
             验证数据
           </Button>
           <div style={{display:'inline-block', width:'40px'}}/>
-          <Button type="primary" loading={isUploadJson} onClick={this.uploadJson}>
+          <Button type="primary" loading={isUploadJson} disabled={true} onClick={this.uploadJson}>
             发布
           </Button>
         </Header>

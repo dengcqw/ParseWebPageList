@@ -13,8 +13,8 @@ const downloadFile = fileName => content => {
     console.log("----> download file", fileName, content)
 }
 
-export default (type, fileName) => {
-  return fetch('/api/downloadJson?type='+type)
+export default (type, fileName, date) => {
+  return fetch(`/api/downloadJson?type=${type}&date=${date}`)
     .then(function(response) {
       if (response.status >= 400) {
         throw new Error("Bad response from server")
